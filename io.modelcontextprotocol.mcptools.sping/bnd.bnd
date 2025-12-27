@@ -1,0 +1,3 @@
+-buildpath: \
+	io.modelcontextprotocol.mcptools.common,\
+	io.modelcontextprotocol.sdk.mcp-core
