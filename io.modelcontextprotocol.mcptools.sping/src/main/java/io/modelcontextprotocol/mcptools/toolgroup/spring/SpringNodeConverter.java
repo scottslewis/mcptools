@@ -1,4 +1,4 @@
-package io.modelcontextprotocol.mcptools.sping;
+package io.modelcontextprotocol.mcptools.toolgroup.spring;
 
 import java.util.List;
 import java.util.function.Function;
@@ -8,15 +8,15 @@ import io.modelcontextprotocol.json.McpJsonDefaults;
 import io.modelcontextprotocol.json.McpJsonMapper;
 import io.modelcontextprotocol.mcptools.common.AnnotationsNode;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
+import io.modelcontextprotocol.mcptools.common.GroupNodeConverter;
 import io.modelcontextprotocol.mcptools.common.PromptArgumentNode;
 import io.modelcontextprotocol.mcptools.common.PromptNode;
+import io.modelcontextprotocol.mcptools.common.PromptNodeConverter;
 import io.modelcontextprotocol.mcptools.common.ResourceNode;
+import io.modelcontextprotocol.mcptools.common.ResourceNodeConverter;
 import io.modelcontextprotocol.mcptools.common.ToolAnnotationsNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.common.ToolNodeConverter;
-import io.modelcontextprotocol.mcptools.common.GroupNodeConverter;
-import io.modelcontextprotocol.mcptools.common.ResourceNodeConverter;
-import io.modelcontextprotocol.mcptools.common.PromptNodeConverter;
 import io.modelcontextprotocol.spec.McpSchema;
 import io.modelcontextprotocol.spec.McpSchema.Annotations;
 import io.modelcontextprotocol.spec.McpSchema.Group;
@@ -27,10 +27,8 @@ import io.modelcontextprotocol.spec.McpSchema.Role;
 import io.modelcontextprotocol.spec.McpSchema.Tool;
 import io.modelcontextprotocol.spec.McpSchema.ToolAnnotations;
 
-public class SpringNodeConverter implements ToolNodeConverter<Tool>, 
-											GroupNodeConverter<Group>, 
-											ResourceNodeConverter<Resource>, 
-											PromptNodeConverter<Prompt> {
+public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeConverter<Group>,
+		ResourceNodeConverter<Resource>, PromptNodeConverter<Prompt> {
 
 	protected GroupNodeConverter groupNodeConverter = new GroupNodeConverter();
 	protected PromptArgumentNodeConverter promptArgumentNodeConverter = new PromptArgumentNodeConverter();
@@ -39,10 +37,10 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 	protected ResourceNodeConverter resourceNodeConverter = new ResourceNodeConverter();
 	protected ToolAnnotationsNodeConverter toolAnnotationsNodeConverter = new ToolAnnotationsNodeConverter();
 	protected ToolNodeConverter toolNodeConverter = new ToolNodeConverter();
-	
+
 	McpJsonMapper jsonMapper = McpJsonDefaults.getDefaultMcpJsonMapper();
-	
-	public class GroupNodeConverter implements Function<GroupNode,Group> {
+
+	public class GroupNodeConverter implements Function<GroupNode, Group> {
 
 		@Override
 		public Group apply(GroupNode gn) {
@@ -58,15 +56,15 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 			return builder.build();
 		}
 	}
-	
-	public class PromptArgumentNodeConverter implements Function<PromptArgumentNode,PromptArgument> {
+
+	public class PromptArgumentNodeConverter implements Function<PromptArgumentNode, PromptArgument> {
 		@Override
 		public PromptArgument apply(PromptArgumentNode pan) {
 			return new PromptArgument(pan.getName(), pan.getTitle(), pan.getDescription(), pan.isRequired());
 		}
 	}
 
-	public class PromptNodeConverter implements Function<PromptNode,Prompt> {
+	public class PromptNodeConverter implements Function<PromptNode, Prompt> {
 
 		@Override
 		public Prompt apply(PromptNode pn) {
@@ -84,24 +82,25 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 					return groupNodeConverter.apply(grp);
 				}).collect(Collectors.toList());
 			}
-			return new McpSchema.Prompt(pn.getName(), grps, pn.getTitle(), pn.getDescription(), promptArguments, pn.getMeta());
+			return new McpSchema.Prompt(pn.getName(), grps, pn.getTitle(), pn.getDescription(), promptArguments,
+					pn.getMeta());
 		}
 
 	}
 
-	public class AnnotationsNodeConverter implements Function<AnnotationsNode,Annotations> {
+	public class AnnotationsNodeConverter implements Function<AnnotationsNode, Annotations> {
 
 		@Override
 		public Annotations apply(AnnotationsNode an) {
 			List<Role> audience = an.getAudience().stream().map(rn -> {
 				Role result = null;
 				switch (rn) {
-				case USER: 
+				case USER:
 					result = Role.USER;
 					break;
-				case ASSISTANT: 
+				case ASSISTANT:
 					result = Role.ASSISTANT;
-					break;	
+					break;
 				}
 				return result;
 			}).toList();
@@ -109,7 +108,7 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 		}
 	}
 
-	public class ResourceNodeConverter implements Function<ResourceNode,Resource> {
+	public class ResourceNodeConverter implements Function<ResourceNode, Resource> {
 
 		@Override
 		public Resource apply(ResourceNode rn) {
@@ -130,16 +129,17 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 
 	}
 
-	public class ToolAnnotationsNodeConverter implements Function<ToolAnnotationsNode,ToolAnnotations> {
+	public class ToolAnnotationsNodeConverter implements Function<ToolAnnotationsNode, ToolAnnotations> {
 
 		@Override
 		public ToolAnnotations apply(ToolAnnotationsNode tan) {
-			return new ToolAnnotations(tan.getTitle(), tan.getReadOnlyHint(), tan.getDestructiveHint(), tan.getIdempotentHint(), tan.getOpenWorldHint(), tan.getReturnDirect());
+			return new ToolAnnotations(tan.getTitle(), tan.getReadOnlyHint(), tan.getDestructiveHint(),
+					tan.getIdempotentHint(), tan.getOpenWorldHint(), tan.getReturnDirect());
 		}
 
 	}
 
-	public class ToolNodeConverter implements Function<ToolNode,Tool> {
+	public class ToolNodeConverter implements Function<ToolNode, Tool> {
 
 		@Override
 		public Tool apply(ToolNode tn) {
@@ -171,24 +171,21 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>,
 		}
 	}
 
-
 	@Override
 	public Tool convertToolNode(ToolNode toolNode) {
 		return toolNodeConverter.apply(toolNode);
 	}
-
 
 	@Override
 	public Prompt convertPromptNode(PromptNode tn) {
 		return promptNodeConverter.apply(tn);
 	}
 
-
 	@Override
 	public Resource convertResourceNode(ResourceNode resourceNode) {
 		return resourceNodeConverter.apply(resourceNode);
 	}
-	
+
 	@Override
 	public Group convertGroupNode(GroupNode groupNode) {
 		return groupNodeConverter.apply(groupNode);

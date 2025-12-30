@@ -1,3 +1,6 @@
 -buildpath: \
 	org.osgi.annotation.versioning,\
 	org.osgi.annotation.bundle
+Export-Package: \
+	io.modelcontextprotocol.mcptools.annotation,\
+	io.modelcontextprotocol.mcptools.annotation.util
