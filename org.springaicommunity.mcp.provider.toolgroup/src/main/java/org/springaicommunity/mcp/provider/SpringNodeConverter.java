@@ -1,4 +1,4 @@
-package io.modelcontextprotocol.mcptools.toolgroup.spring;
+package org.springaicommunity.mcp.provider;
 
 import java.util.List;
 import java.util.function.Function;

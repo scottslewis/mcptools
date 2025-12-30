@@ -1,10 +1,13 @@
-package io.modelcontextprotocol.mcptools.toolgroup.spring;
+package org.springaicommunity.mcp.provider.toolgroup;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 
 import org.springaicommunity.mcp.method.tool.ReturnMode;
+import org.springaicommunity.mcp.provider.SpringJsonObjectMapper;
+import org.springaicommunity.mcp.provider.SpringNodeConverter;
+import org.springaicommunity.mcp.provider.SpringToolNodeProvider;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.common.ToolNodeConverter;

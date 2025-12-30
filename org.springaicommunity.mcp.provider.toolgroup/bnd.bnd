@@ -1,0 +1,8 @@
+-buildpath: \
+	org.springaicommunity.mcp-annotations,\
+	io.modelcontextprotocol.mcptools.toolgroup,\
+	io.modelcontextprotocol.mcptools.common,\
+	io.modelcontextprotocol.sdk.mcp-core,\
+	io.modelcontextprotocol.mcptools.json,\
+	io.projectreactor.reactor-core,\
+	io.modelcontextprotocol.mcptools.annotation

@@ -1,4 +1,4 @@
-package io.modelcontextprotocol.mcptools.toolgroup.spring;
+package org.springaicommunity.mcp.provider;
 
 import io.modelcontextprotocol.mcptools.annotation.util.StringUtils;
 import io.modelcontextprotocol.mcptools.toolgroup.AbstractToolNodeProvider;

@@ -1,4 +1,4 @@
-package io.modelcontextprotocol.mcptools.toolgroup.spring;
+package org.springaicommunity.mcp.provider.toolgroup;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -21,7 +21,7 @@ public class SyncMcpToolGroupProvider
 
 	public SyncMcpToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
 		super(toolObjects, toolGroups);
-		this.setCallHandlerProvider(
+		setCallHandlerProvider(
 				new AbstractCallHandlerProvider<McpSyncServerExchange, CallToolRequest, CallToolResult>() {
 					@Override
 					public BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> getCallHandler(
