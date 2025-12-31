@@ -16,10 +16,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
-public class SyncMcpToolGroupProvider
+public class SyncToolGroupProvider
 		extends AbstractSpringToolGroupProvider<SyncToolSpecification, McpSyncServerExchange, CallToolResult> {
 
-	public SyncMcpToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
+	public SyncToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
 		super(toolObjects, toolGroups);
 		setCallHandlerProvider(
 				new AbstractCallHandlerProvider<McpSyncServerExchange, CallToolRequest, CallToolResult>() {
@@ -32,7 +32,7 @@ public class SyncMcpToolGroupProvider
 				});
 	}
 
-	public SyncMcpToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
+	public SyncToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
 		this(List.of(toolObject), toolClasses);
 	}
 

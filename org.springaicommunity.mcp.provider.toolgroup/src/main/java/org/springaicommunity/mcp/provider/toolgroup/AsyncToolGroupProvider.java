@@ -18,10 +18,10 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import reactor.core.publisher.Mono;
 
-public class AsyncMcpToolGroupProvider
+public class AsyncToolGroupProvider
 		extends AbstractSpringToolGroupProvider<AsyncToolSpecification, McpAsyncServerExchange, Mono<CallToolResult>> {
 
-	public AsyncMcpToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
+	public AsyncToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
 		super(toolObjects, toolGroups);
 		setCallHandlerProvider(
 				new AbstractCallHandlerProvider<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>>() {
@@ -34,7 +34,7 @@ public class AsyncMcpToolGroupProvider
 				});
 	}
 
-	public AsyncMcpToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
+	public AsyncToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
 		this(List.of(toolObject), toolClasses);
 	}
 
