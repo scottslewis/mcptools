@@ -10,8 +10,6 @@ public class ResourceNode extends BaseLeafNode {
 
 	protected AnnotationsNode annotations;
 
-	protected String lastModified;
-
 	public ResourceNode(String name) {
 		super(name);
 	}
@@ -40,14 +38,6 @@ public class ResourceNode extends BaseLeafNode {
 		this.mimeType = mimeType;
 	}
 
-	public String getLastModified() {
-		return lastModified;
-	}
-
-	public void setLastModified(String lastModified) {
-		this.lastModified = lastModified;
-	}
-
 	public AnnotationsNode getAnnotations() {
 		return annotations;
 	}
@@ -56,26 +46,11 @@ public class ResourceNode extends BaseLeafNode {
 		this.annotations = annotations;
 	}
 
-//	public McpSchema.Resource.Builder convert() {
-//		McpSchema.Resource.Builder resourceBuilder = new McpSchema.Resource.Builder();
-//		resourceBuilder.name(getName());
-//		resourceBuilder.title(getTitle());
-//		resourceBuilder.description(getDescription());
-//		resourceBuilder.uri(getUri());
-//		resourceBuilder.size(getSize());
-//		resourceBuilder.mimeType(getMimeType());
-//		AnnotationsNode an = getAnnotations();
-//		if (an != null) {
-//			resourceBuilder.annotations(an.serialize());
-//		}
-//		return resourceBuilder;
-//	}
-//
 	@Override
 	public String toString() {
 		return "ResourceNode [name=" + name + ", title=" + title + ", description=" + description + ", meta=" + meta
 				+ ", uri=" + uri + ", size=" + size + ", mimeType=" + mimeType + ", annotations=" + annotations
-				+ ", lastModified=" + lastModified + "]";
+				+ "]";
 	}
 
 }

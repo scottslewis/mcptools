@@ -87,11 +87,7 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 		return toolSpecs;
 	}
 
-	@Override
-	public void removeToolNodes(List<ToolNode> toolNodes) {
-	}
-
 	protected abstract ToolSpecType buildSpecification(ToolNode toolNode,
-			BiFunction<ExchangeType, CallToolRequestType, CallToolResultType> b);
+			BiFunction<ExchangeType, CallToolRequestType, CallToolResultType> callHandler);
 
 }

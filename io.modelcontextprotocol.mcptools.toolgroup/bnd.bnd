@@ -2,6 +2,6 @@
 	org.osgi.annotation.bundle,\
 	org.osgi.annotation.versioning,\
 	io.modelcontextprotocol.mcptools.common,\
-	io.modelcontextprotocol.mcptools.annotation,\
 	io.modelcontextprotocol.mcptools.json,\
-	slf4j.api
+	slf4j.api,\
+	io.modelcontextprotocol.mcptools.annotation

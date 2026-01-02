@@ -7,9 +7,9 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
+import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 import io.modelcontextprotocol.mcptools.annotation.McpTool;
 import io.modelcontextprotocol.mcptools.annotation.McpToolGroup;
-import io.modelcontextprotocol.mcptools.annotation.util.StringUtils;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.json.JsonObjectMapper;
@@ -52,7 +52,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 
 	protected GroupNode getToolGroupNode(McpToolGroup annotation, Class<?> clazz) {
 		// First look for McpToolGroup annotations on package hierarchy
-		GroupNode parentGroupNode = getToolGroupNodeFromPackage(clazz.getPackage(), clazz.getClassLoader());
+		GroupNode parentGroupNode = getToolGroupNodeFromPackage(clazz.getPackage(), clazz.getClassLoader(), "");
 
 		String parentGroupName = annotation.name();
 		if (!StringUtils.hasText(parentGroupName)) {
@@ -74,35 +74,43 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		}
 	}
 
-	protected GroupNode getToolGroupNodeFromPackage(Package p, ClassLoader classloader) {
+	protected String[] splitPackageName(String packageName) {
+		String parentPackageName = null;
+		String childPackageName = null;
+		int lastDotIndex = packageName.lastIndexOf(SEPARATOR);
+		if (lastDotIndex > 0 && lastDotIndex < packageName.length()) {
+			parentPackageName = packageName.substring(0, lastDotIndex);
+			childPackageName = packageName.substring(lastDotIndex + 1);
+		}
+		return new String[] { parentPackageName, childPackageName };
+	}
+	
+	protected GroupNode getToolGroupNodeFromPackage(Package p, ClassLoader classloader, String nameSuffix) {
+		GroupNode parentGroup = null;
+		String[] splitPackageName = splitPackageName(p.getName());
+		if (StringUtils.hasText(splitPackageName[0])) {
+			Package parentPackage = getParentPackage(splitPackageName[0], classloader);
+			if (StringUtils.hasText(splitPackageName[1])) {
+				nameSuffix = splitPackageName[1] + (StringUtils.hasText(nameSuffix) ? SEPARATOR + nameSuffix : "");
+			}
+			if (parentPackage != null) {
+				parentGroup = getToolGroupNodeFromPackage(parentPackage, classloader, nameSuffix);
+			}
+		}
+		String packageGroupName = (parentGroup == null) ? p.getName() : nameSuffix;
+		
 		McpToolGroup packageAnnotation = p.getAnnotation(McpToolGroup.class);
-		// Get parent package
 		if (packageAnnotation != null) {
-			GroupNode parentGroup = null;
-			String currentPackageName = p.getName();
-			String parentPackageName = null;
-			String childPackageName = null;
-			int lastDotIndex = currentPackageName.lastIndexOf(SEPARATOR);
-			if (lastDotIndex > 0 && lastDotIndex < currentPackageName.length()) {
-				parentPackageName = currentPackageName.substring(0, lastDotIndex);
-				childPackageName = currentPackageName.substring(lastDotIndex + 1);
-			}
-
-			if (parentPackageName != null) {
-				Package parentPackage = getParentPackage(parentPackageName, classloader);
-				if (parentPackage != null) {
-					parentGroup = getToolGroupNodeFromPackage(parentPackage, classloader);
-				}
-			}
-
-			String packageGroupName = packageAnnotation.name();
-			// if no annotation name specified
-			if (!StringUtils.hasText(packageGroupName)) {
-				packageGroupName = (parentGroup != null) ? childPackageName : currentPackageName;
-			}
+			// Has annotation, get metadata from annotation
+			String annotationName = packageAnnotation.name();
+			packageGroupName = StringUtils.hasText(annotationName) ? annotationName : packageGroupName;
 			return createGroupNode(packageGroupName, packageAnnotation.title(), packageAnnotation.description(),
 					parentGroup, null);
+		} else if (parentGroup != null) {
+			// Doesn't have annotation, but has a parent, so create a GroupNode
+			return createGroupNode(packageGroupName, null, null, parentGroup, null);
 		}
+		// No group node found
 		return null;
 	}
 
@@ -148,7 +156,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 
 	protected abstract Stream<Method> filterMethodStream(Stream<Method> inputStream);
 
-	public List<SpecificationType> getToolGroupSpecifications(Object toolObject, Class<?> toolClass,
+	protected List<SpecificationType> getToolGroupSpecifications(Object toolObject, Class<?> toolClass,
 			GroupNode toolGroup) {
 		return filterMethodStream(Stream.of(getMethodsForClass(toolClass))
 				// first filter for the McpTool annotation

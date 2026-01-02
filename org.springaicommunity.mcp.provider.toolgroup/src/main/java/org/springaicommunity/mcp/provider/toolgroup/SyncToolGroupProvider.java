@@ -1,13 +1,13 @@
 package org.springaicommunity.mcp.provider.toolgroup;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import org.springaicommunity.mcp.McpPredicates;
 import org.springaicommunity.mcp.method.tool.ReturnMode;
 import org.springaicommunity.mcp.method.tool.SyncMcpToolMethodCallback;
+import org.springaicommunity.mcp.provider.SpringToolNodeProvider;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.toolgroup.AbstractCallHandlerProvider;
@@ -19,8 +19,8 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 public class SyncToolGroupProvider
 		extends AbstractSpringToolGroupProvider<SyncToolSpecification, McpSyncServerExchange, CallToolResult> {
 
-	public SyncToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
-		super(toolObjects, toolGroups);
+	public SyncToolGroupProvider() {
+		setToolNodeProvider(new SpringToolNodeProvider.Sync());
 		setCallHandlerProvider(
 				new AbstractCallHandlerProvider<McpSyncServerExchange, CallToolRequest, CallToolResult>() {
 					@Override
@@ -30,10 +30,6 @@ public class SyncToolGroupProvider
 								getToolCallException());
 					}
 				});
-	}
-
-	public SyncToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
-		this(List.of(toolObject), toolClasses);
 	}
 
 	@Override

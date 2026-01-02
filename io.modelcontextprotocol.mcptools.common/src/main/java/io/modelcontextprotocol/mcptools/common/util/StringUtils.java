@@ -1,4 +1,4 @@
-package io.modelcontextprotocol.mcptools.annotation.util;
+package io.modelcontextprotocol.mcptools.common.util;
 
 public class StringUtils {
 

@@ -42,5 +42,7 @@ public interface ToolGroupServer<ServerType, ToolSpecType, ToolType, ExchangeTyp
 	}
 
 	void removeToolNode(ToolNode toolNode);
+	
+	void addToolGroup(Object instance, Class<?>...classes);
 
 }

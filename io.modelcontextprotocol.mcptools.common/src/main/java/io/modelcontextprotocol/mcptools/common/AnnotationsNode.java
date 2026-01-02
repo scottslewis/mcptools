@@ -16,14 +16,6 @@ public class AnnotationsNode {
 		this.lastModified = lastModified;
 	}
 
-//	public McpSchema.Annotations serialize() {
-//		return new McpSchema.Annotations(getAudience(), getPriority(), getLastModified());
-//	}
-//
-//	public static AnnotationsNode deserialize(Annotations annotations) {
-//		return new AnnotationsNode(annotations.audience(), annotations.priority(), annotations.lastModified());
-//	}
-//
 	public List<RoleNode> getAudience() {
 		return audience;
 	}

@@ -1,7 +1,6 @@
 package org.springaicommunity.mcp.provider.toolgroup;
 
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
@@ -9,6 +8,7 @@ import org.springaicommunity.mcp.McpPredicates;
 import org.springaicommunity.mcp.method.tool.AsyncMcpToolMethodCallback;
 import org.springaicommunity.mcp.method.tool.ReactiveUtils;
 import org.springaicommunity.mcp.method.tool.ReturnMode;
+import org.springaicommunity.mcp.provider.SpringToolNodeProvider;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.toolgroup.AbstractCallHandlerProvider;
@@ -21,8 +21,8 @@ import reactor.core.publisher.Mono;
 public class AsyncToolGroupProvider
 		extends AbstractSpringToolGroupProvider<AsyncToolSpecification, McpAsyncServerExchange, Mono<CallToolResult>> {
 
-	public AsyncToolGroupProvider(List<Object> toolObjects, Class<?>... toolGroups) {
-		super(toolObjects, toolGroups);
+	public AsyncToolGroupProvider() {
+		setToolNodeProvider(new SpringToolNodeProvider.Async());
 		setCallHandlerProvider(
 				new AbstractCallHandlerProvider<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>>() {
 					@Override
@@ -32,10 +32,6 @@ public class AsyncToolGroupProvider
 								getToolCallException());
 					}
 				});
-	}
-
-	public AsyncToolGroupProvider(Object toolObject, Class<?>... toolClasses) {
-		this(List.of(toolObject), toolClasses);
 	}
 
 	@Override

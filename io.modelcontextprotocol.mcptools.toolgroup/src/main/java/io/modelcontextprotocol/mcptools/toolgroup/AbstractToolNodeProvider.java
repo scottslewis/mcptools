@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import io.modelcontextprotocol.mcptools.annotation.McpTool;
 import io.modelcontextprotocol.mcptools.annotation.McpTool.McpAnnotations;
 import io.modelcontextprotocol.mcptools.annotation.McpToolGroup;
-import io.modelcontextprotocol.mcptools.annotation.util.StringUtils;
+import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
 import io.modelcontextprotocol.mcptools.common.ToolAnnotationsNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
@@ -26,8 +26,8 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 		this.outputSchemaGenerator = outputSchemaGenerator;
 	}
 
-	protected String getInputSchema(Method mcpToolMethod) {
-		return this.inputSchemaGenerator.generateInputSchema(mcpToolMethod);
+	protected void setInputSchemaGenerator(InputSchemaGenerator inputSchemaGenerator) {
+		this.inputSchemaGenerator = inputSchemaGenerator;
 	}
 
 	protected abstract GroupType createGroup(String name, String title, String description, GroupType parent);
@@ -122,13 +122,6 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 		return null;
 	}
 
-	protected String getOutputSchema(Method mcpToolMethod) {
-		if (this.outputSchemaGenerator != null) {
-			return this.outputSchemaGenerator.generateOutputSchema(mcpToolMethod);
-		}
-		return null;
-	}
-
 	@Override
 	public ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group) {
 		String name = StringUtils.cleanAnnotationString(mcpToolAnnotation.name());
@@ -142,10 +135,10 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 			result.addParentGroup(group);
 		}
 		result.setDescription(StringUtils.cleanAnnotationString(mcpToolAnnotation.description()));
-		result.setInputSchema(getInputSchema(mcpToolMethod));
 		result.setTitle(StringUtils.cleanAnnotationString(mcpToolAnnotation.title()));
 		result.setToolAnnotations(getToolAnnotationsNode(mcpToolAnnotation.annotations(), result));
-		result.setOutputSchema(getOutputSchema(mcpToolMethod));
+		result.setInputSchema(this.inputSchemaGenerator.generateInputSchema(mcpToolMethod));
+		result.setOutputSchema(this.outputSchemaGenerator.generateOutputSchema(mcpToolMethod));
 		return result;
 	}
 
