@@ -18,7 +18,7 @@ public class SpringOutputSchemaGenerator {
 		@Override
 		protected Type getReturnTypeArgument(Method mcpToolMethod) {
 			Class<?> methodReturnType = mcpToolMethod.getReturnType();
-			if (this.generateOutputSchema && methodReturnType != null && methodReturnType != CallToolResult.class
+			if (methodReturnType != null && methodReturnType != CallToolResult.class
 					&& methodReturnType != Void.class && methodReturnType != void.class
 					&& !ClassUtils.isPrimitiveOrWrapper(methodReturnType)
 					&& !ClassUtils.isSimpleValueType(methodReturnType)) {
@@ -38,7 +38,7 @@ public class SpringOutputSchemaGenerator {
 
 		@Override
 		protected Class<?> getReturnTypeArgument(Method mcpToolMethod) {
-			if (this.generateOutputSchema && !ReactiveUtils.isReactiveReturnTypeOfVoid(mcpToolMethod)
+			if (!ReactiveUtils.isReactiveReturnTypeOfVoid(mcpToolMethod)
 					&& !ReactiveUtils.isReactiveReturnTypeOfCallToolResult(mcpToolMethod)) {
 
 				Optional<Type> opt = ReactiveUtils.getReactiveReturnTypeArgument(mcpToolMethod);

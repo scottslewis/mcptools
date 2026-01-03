@@ -19,6 +19,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 
 	public static final String SEPARATOR = ".";
 
+	protected boolean generateOutputSchema = true;
 	protected JsonObjectMapper jsonMapper;
 	protected AbstractToolNodeProvider<GroupType> toolNodeProvider;
 	protected AbstractCallHandlerProvider<ExchangeType, CallRequestType, CallResultType> callHandlerProvider;
@@ -136,20 +137,31 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 	protected abstract SpecificationType buildSpecification(ToolNode toolNode,
 			BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler);
 
+	protected McpTool getToolJavaAnnotation(Method mcpToolMethod) {
+		return mcpToolMethod.getAnnotation(McpTool.class);
+	}
+	
+	protected ToolNode getToolNode(McpTool toolJavaAnnotation, Method mcpToolMethod, GroupNode toolGroup) {
+		return this.toolNodeProvider.getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup, this.generateOutputSchema);
+	}
+	
+	protected BiFunction<ExchangeType, CallRequestType, CallResultType> getCallHandler(Method mcpToolMethod, Object toolObject, boolean outputSchema) {
+		// set the call handler provider to use structured output if the outputSchema
+		// has been created
+		this.callHandlerProvider.setUseStructuredOutput(outputSchema);
+		return this.callHandlerProvider.getCallHandler(mcpToolMethod, toolObject);
+	}
+	
 	protected SpecificationType getToolGroupSpecification(Object toolObject, Method mcpToolMethod,
 			GroupNode toolGroup) {
 		// Get annotation
-		McpTool toolJavaAnnotation = mcpToolMethod.getAnnotation(McpTool.class);
+		McpTool toolJavaAnnotation = getToolJavaAnnotation(mcpToolMethod);
 		// Get ToolNode for annotation, method, and toolGroup
 		Objects.requireNonNull(toolJavaAnnotation,
 				"No java annotation found for annotated method=" + mcpToolMethod.getName());
-		ToolNode toolNode = this.toolNodeProvider.getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup);
-		// set the call handler provider to use structured output if the outputSchema
-		// has been created
-		this.callHandlerProvider.setUseStructuredOutput(toolNode.getOutputSchema() != null);
+		ToolNode toolNode = getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup);
 		// Get callhandler from callHandlerProvider
-		BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler = this.callHandlerProvider
-				.getCallHandler(mcpToolMethod, toolObject);
+		BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler = getCallHandler(mcpToolMethod, toolObject, toolNode.getOutputSchema() != null);
 		// Build specification with Tool and callHandler
 		return buildSpecification(toolNode, callHandler);
 	}

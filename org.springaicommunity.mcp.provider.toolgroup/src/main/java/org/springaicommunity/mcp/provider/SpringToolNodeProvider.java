@@ -31,7 +31,7 @@ public class SpringToolNodeProvider extends AbstractToolNodeProvider<Group> {
 		}
 
 	}
-	
+
 	public static class Sync extends SpringToolNodeProvider {
 
 		public Sync() {
@@ -40,6 +40,5 @@ public class SpringToolNodeProvider extends AbstractToolNodeProvider<Group> {
 		}
 
 	}
-
 
 }

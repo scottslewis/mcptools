@@ -34,12 +34,12 @@ public class AsyncToolGroupServer extends
 
 	@Override
 	protected void addTool(McpAsyncServer server, AsyncToolSpecification toolSpec) {
-		server.addTool(toolSpec);
+		server.addTool(toolSpec).block();
 	}
 
 	@Override
 	protected void removeTool(McpAsyncServer server, String toolName) {
-		server.removeTool(toolName);
+		server.removeTool(toolName).block();
 	}
 
 	@Override
@@ -52,12 +52,12 @@ public class AsyncToolGroupServer extends
 	public void addToolNode(ToolNode toolNode,
 			BiFunction<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>> callHandler) {
 		AsyncToolSpecification specification = buildSpecification(toolNode, callHandler);
-		this.server.addTool(specification);
+		this.server.addTool(specification).block();
 	}
 
 	@Override
 	public void removeToolNode(ToolNode toolNode) {
-		this.server.removeTool(toolNode.getName());
+		this.server.removeTool(toolNode.getName()).block();
 	}
 
 }

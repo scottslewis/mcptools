@@ -123,7 +123,7 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 	}
 
 	@Override
-	public ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group) {
+	public ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group, boolean generateOutputSchema) {
 		String name = StringUtils.cleanAnnotationString(mcpToolAnnotation.name());
 		if (name == null) {
 			name = mcpToolMethod.getName();
@@ -138,7 +138,9 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 		result.setTitle(StringUtils.cleanAnnotationString(mcpToolAnnotation.title()));
 		result.setToolAnnotations(getToolAnnotationsNode(mcpToolAnnotation.annotations(), result));
 		result.setInputSchema(this.inputSchemaGenerator.generateInputSchema(mcpToolMethod));
-		result.setOutputSchema(this.outputSchemaGenerator.generateOutputSchema(mcpToolMethod));
+		if (generateOutputSchema && this.outputSchemaGenerator != null) {
+			result.setOutputSchema(this.outputSchemaGenerator.generateOutputSchema(mcpToolMethod));
+		}
 		return result;
 	}
 

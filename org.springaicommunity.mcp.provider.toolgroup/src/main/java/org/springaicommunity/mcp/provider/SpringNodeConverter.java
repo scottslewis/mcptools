@@ -75,16 +75,16 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			if (parent != null) {
 				gtn.setParent(convertToGroupNode(parent));
 			}
-			return gtn;	
+			return gtn;
 		}
-		
+
 	}
 
 	public class SpringPromptArgumentNodeConverter {
 		public PromptArgument convertFromPromptArgumentNode(PromptArgumentNode pan) {
 			return new PromptArgument(pan.getName(), pan.getTitle(), pan.getDescription(), pan.isRequired());
 		}
-		
+
 		public PromptArgumentNode convertToPromptArgumentNode(PromptArgument pa) {
 			PromptArgumentNode pan = new PromptArgumentNode(pa.name());
 			pan.setTitle(pa.title());
@@ -145,7 +145,7 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			}).toList();
 			return new Annotations(audience, an.getPriority(), an.getLastModified());
 		}
-		
+
 		public AnnotationsNode convertToAnnotationsNode(Annotations a) {
 			List<RoleNode> audience = a.audience().stream().map(r -> {
 				RoleNode result = null;
@@ -181,7 +181,7 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			}
 			return resourceBuilder.build();
 		}
-		
+
 		public ResourceNode convertToResourceNode(Resource r) {
 			ResourceNode rn = new ResourceNode(r.name());
 			Annotations a = r.annotations();
@@ -204,7 +204,7 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			return new ToolAnnotations(tan.getTitle(), tan.getReadOnlyHint(), tan.getDestructiveHint(),
 					tan.getIdempotentHint(), tan.getOpenWorldHint(), tan.getReturnDirect());
 		}
-		
+
 		public ToolAnnotationsNode convertToToolAnnotationsNode(ToolAnnotations t) {
 			ToolAnnotationsNode tan = new ToolAnnotationsNode();
 			tan.setTitle(t.title());
@@ -215,25 +215,26 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			tan.setReturnDirect(t.returnDirect());
 			return tan;
 		}
-		
 
 	}
 
 	protected String generateInputSchema(JsonSchema inputSchema) {
-		if (inputSchema == null) return null;
+		if (inputSchema == null)
+			return null;
 		try {
 			return jsonMapper.writeValueAsString(inputSchema);
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Invalid input schema: " + inputSchema, e);		
+			throw new IllegalArgumentException("Invalid input schema: " + inputSchema, e);
 		}
 	}
-	
+
 	protected String generateOutputSchema(Map<String, Object> outputSchema) {
-		if (outputSchema == null) return null;
+		if (outputSchema == null)
+			return null;
 		try {
 			return jsonMapper.writeValueAsString(outputSchema);
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Invalid output schema: " + outputSchema, e);		
+			throw new IllegalArgumentException("Invalid output schema: " + outputSchema, e);
 		}
 	}
 
@@ -255,7 +256,8 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			}
 			builder.meta(tn.getMeta());
 			ToolAnnotationsNode tan = tn.getToolAnnotations();
-			builder.annotations((tan != null) ? toolAnnotationsNodeConverter.convertFromToolAnnotationsNode(tan) : null);
+			builder.annotations(
+					(tan != null) ? toolAnnotationsNodeConverter.convertFromToolAnnotationsNode(tan) : null);
 			List<GroupNode> parentGroupNodes = tn.getParentGroups();
 			if (parentGroupNodes != null) {
 				List<McpSchema.Group> parentGroups = parentGroupNodes.stream().map(pgn -> {

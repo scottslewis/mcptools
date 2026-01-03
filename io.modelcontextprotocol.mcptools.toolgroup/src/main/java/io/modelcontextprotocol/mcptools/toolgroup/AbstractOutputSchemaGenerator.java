@@ -7,7 +7,6 @@ import io.modelcontextprotocol.mcptools.json.JsonObjectMapper;
 public abstract class AbstractOutputSchemaGenerator<TypeType> implements OutputSchemaGenerator {
 
 	protected JsonObjectMapper mapper;
-	protected boolean generateOutputSchema;
 	
 	public AbstractOutputSchemaGenerator() {
 	}
@@ -16,17 +15,11 @@ public abstract class AbstractOutputSchemaGenerator<TypeType> implements OutputS
 		this.mapper = mapper;
 	}
 	
-	protected void setGenerateOutputSchema(boolean generateOutputSchema) {
-		this.generateOutputSchema = generateOutputSchema;
-	}
-
 	@Override
 	public String generateOutputSchema(Method mcpToolMethod) {
-		if (this.generateOutputSchema) {
-			TypeType returnTypeArgument = getReturnTypeArgument(mcpToolMethod);
-			if (returnTypeArgument != null) {
-				return generateOutputSchema(returnTypeArgument);
-			}
+		TypeType returnTypeArgument = getReturnTypeArgument(mcpToolMethod);
+		if (returnTypeArgument != null) {
+			return generateOutputSchema(returnTypeArgument);
 		}
 		return null;
 	}
