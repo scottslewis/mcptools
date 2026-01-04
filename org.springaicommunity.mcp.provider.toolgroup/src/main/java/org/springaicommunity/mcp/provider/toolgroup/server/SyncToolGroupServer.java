@@ -1,10 +1,12 @@
 package org.springaicommunity.mcp.provider.toolgroup.server;
 
+import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springaicommunity.mcp.provider.toolgroup.SyncToolGroupProvider;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
+import io.modelcontextprotocol.mcptools.toolgroup.ToolNodeSpecification;
 import io.modelcontextprotocol.server.McpServerFeatures.SyncToolSpecification;
 import io.modelcontextprotocol.server.McpSyncServer;
 import io.modelcontextprotocol.server.McpSyncServerExchange;
@@ -42,21 +44,25 @@ public class SyncToolGroupServer extends
 	}
 
 	@Override
-	protected SyncToolSpecification buildSpecification(ToolNode toolNode,
-			BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> callHandler) {
-		return SyncToolSpecification.builder().tool(convertToolNode(toolNode)).callHandler(callHandler).build();
-	}
-
-	@Override
-	public void addToolNode(ToolNode toolNode,
-			BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> callHandler) {
-		SyncToolSpecification specification = buildSpecification(toolNode, callHandler);
-		this.server.addTool(specification);
-	}
-
-	@Override
 	public void removeToolNode(ToolNode toolNode) {
 		this.server.removeTool(toolNode.getName());
+	}
+
+	@Override
+	public List<ToolNodeSpecification<SyncToolSpecification>> addToolGroup(Object instance, Class<?>... classes) {
+		List<ToolNodeSpecification<SyncToolSpecification>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
+		specs.forEach(s -> {
+			addTool(this.server, s.getSpecification());
+		});
+		return specs;
+	}
+
+	@Override
+	protected ToolNodeSpecification<SyncToolSpecification> getToolNodeSpecification(ToolNode toolNode,
+			BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> callHandler) {
+		SyncToolSpecification.Builder specBuilder = SyncToolSpecification.builder().tool(convertToolNode(toolNode))
+				.callHandler(callHandler);
+		return new ToolNodeSpecification<SyncToolSpecification>(toolNode, specBuilder.build());
 	}
 
 }

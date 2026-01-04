@@ -10,6 +10,7 @@ public interface ToolNodeProvider {
 
 	public static final String SEPARATOR = ".";
 
-	ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group, boolean generateOutputSchema);
+	ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group,
+			boolean generateOutputSchema);
 
 }

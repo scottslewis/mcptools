@@ -7,33 +7,27 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
-import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 import io.modelcontextprotocol.mcptools.annotation.McpTool;
 import io.modelcontextprotocol.mcptools.annotation.McpToolGroup;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
+import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 import io.modelcontextprotocol.mcptools.json.JsonObjectMapper;
 
 public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, GroupType, ExchangeType, CallRequestType, CallResultType>
-		implements ToolGroupProvider<SpecificationType> {
+		implements ToolGroupProvider<SpecificationType, ExchangeType, CallRequestType, CallResultType> {
 
 	public static final String SEPARATOR = ".";
 
 	protected boolean generateOutputSchema = true;
 	protected JsonObjectMapper jsonMapper;
 	protected AbstractToolNodeProvider<GroupType> toolNodeProvider;
-	protected AbstractCallHandlerProvider<ExchangeType, CallRequestType, CallResultType> callHandlerProvider;
 
 	protected AbstractToolGroupProvider() {
 	}
 
 	protected void setToolNodeProvider(AbstractToolNodeProvider<GroupType> toolNodeProvider) {
 		this.toolNodeProvider = toolNodeProvider;
-	}
-
-	protected void setCallHandlerProvider(
-			AbstractCallHandlerProvider<ExchangeType, CallRequestType, CallResultType> callHandlerProvider) {
-		this.callHandlerProvider = callHandlerProvider;
 	}
 
 	protected void setJsonObjectMapper(JsonObjectMapper jsonMapper) {
@@ -85,7 +79,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		}
 		return new String[] { parentPackageName, childPackageName };
 	}
-	
+
 	protected GroupNode getToolGroupNodeFromPackage(Package p, ClassLoader classloader, String nameSuffix) {
 		GroupNode parentGroup = null;
 		String[] splitPackageName = splitPackageName(p.getName());
@@ -99,7 +93,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 			}
 		}
 		String packageGroupName = (parentGroup == null) ? p.getName() : nameSuffix;
-		
+
 		McpToolGroup packageAnnotation = p.getAnnotation(McpToolGroup.class);
 		if (packageAnnotation != null) {
 			// Has annotation, get metadata from annotation
@@ -134,26 +128,23 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		return (classes.length == 0) ? new Class[] { toolObject.getClass() } : classes;
 	}
 
-	protected abstract SpecificationType buildSpecification(ToolNode toolNode,
+	protected abstract ToolNodeSpecification<SpecificationType> getToolNodeSpecification(ToolNode toolNode,
 			BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler);
 
 	protected McpTool getToolJavaAnnotation(Method mcpToolMethod) {
 		return mcpToolMethod.getAnnotation(McpTool.class);
 	}
-	
+
 	protected ToolNode getToolNode(McpTool toolJavaAnnotation, Method mcpToolMethod, GroupNode toolGroup) {
-		return this.toolNodeProvider.getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup, this.generateOutputSchema);
+		return this.toolNodeProvider.getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup,
+				this.generateOutputSchema);
 	}
-	
-	protected BiFunction<ExchangeType, CallRequestType, CallResultType> getCallHandler(Method mcpToolMethod, Object toolObject, boolean outputSchema) {
-		// set the call handler provider to use structured output if the outputSchema
-		// has been created
-		this.callHandlerProvider.setUseStructuredOutput(outputSchema);
-		return this.callHandlerProvider.getCallHandler(mcpToolMethod, toolObject);
-	}
-	
-	protected SpecificationType getToolGroupSpecification(Object toolObject, Method mcpToolMethod,
-			GroupNode toolGroup) {
+
+	protected abstract BiFunction<ExchangeType, CallRequestType, CallResultType> getCallHandler(Method mcpToolMethod,
+			Object toolObject, boolean useStructuredOutput);
+
+	protected ToolNodeSpecification<SpecificationType> getToolGroupSpecification(Object toolObject,
+			Method mcpToolMethod, GroupNode toolGroup) {
 		// Get annotation
 		McpTool toolJavaAnnotation = getToolJavaAnnotation(mcpToolMethod);
 		// Get ToolNode for annotation, method, and toolGroup
@@ -161,32 +152,41 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 				"No java annotation found for annotated method=" + mcpToolMethod.getName());
 		ToolNode toolNode = getToolNode(toolJavaAnnotation, mcpToolMethod, toolGroup);
 		// Get callhandler from callHandlerProvider
-		BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler = getCallHandler(mcpToolMethod, toolObject, toolNode.getOutputSchema() != null);
+		BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler = getCallHandler(mcpToolMethod,
+				toolObject, toolNode.getOutputSchema() != null);
 		// Build specification with Tool and callHandler
-		return buildSpecification(toolNode, callHandler);
+		return getToolNodeSpecification(toolNode, callHandler);
 	}
 
 	protected abstract Stream<Method> filterMethodStream(Stream<Method> inputStream);
 
-	protected List<SpecificationType> getToolGroupSpecifications(Object toolObject, Class<?> toolClass,
-			GroupNode toolGroup) {
+	protected List<ToolNodeSpecification<SpecificationType>> getToolGroupSpecifications(Object toolObject,
+			Class<?> toolClass, GroupNode toolGroup) {
 		return filterMethodStream(Stream.of(getMethodsForClass(toolClass))
 				// first filter for the McpTool annotation
 				.filter(method -> method.isAnnotationPresent(McpTool.class)))
 				// After the the sub-class specific impl of filterMethodStream returns
 				// then sort call getToolGroupSpecification for given object, mcpToolMethod and
 				.sorted((m1, m2) -> m1.getName().compareTo(m2.getName())).map(mcpToolMethod -> {
-					return (SpecificationType) getToolGroupSpecification(toolObject, mcpToolMethod, toolGroup);
+					return (ToolNodeSpecification<SpecificationType>) getToolGroupSpecification(toolObject,
+							mcpToolMethod, toolGroup);
 				}).toList();
 	}
 
-	public List<SpecificationType> getToolGroupSpecifications(List<Object> toolObjects, Class<?>... classes) {
+	public List<ToolNodeSpecification<SpecificationType>> getToolGroupSpecifications(List<Object> toolObjects, Class<?>... classes) {
 		return toolObjects.stream().map(toolObject -> {
 			return Stream.of(getClassesForObject(toolObject, classes)).map(toolClass -> {
 				GroupNode toolGroup = getToolGroup(toolClass);
-				return (List<SpecificationType>) getToolGroupSpecifications(toolObject, toolClass, toolGroup);
+				return getToolGroupSpecifications(toolObject, toolClass, toolGroup);
 			}).flatMap(List::stream).toList();
 		}).flatMap(List::stream).toList();
 	}
+
+	@Override
+	public List<ToolNodeSpecification<SpecificationType>> getToolGroupSpecifications(Object toolGroupObject,
+			Class<?>... classes) {
+		return getToolGroupSpecifications(List.of(toolGroupObject), classes);
+	}
+
 
 }

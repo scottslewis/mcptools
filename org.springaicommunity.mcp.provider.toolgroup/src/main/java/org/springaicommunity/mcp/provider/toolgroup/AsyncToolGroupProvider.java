@@ -11,7 +11,7 @@ import org.springaicommunity.mcp.method.tool.ReturnMode;
 import org.springaicommunity.mcp.provider.SpringToolNodeProvider;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
-import io.modelcontextprotocol.mcptools.toolgroup.AbstractCallHandlerProvider;
+import io.modelcontextprotocol.mcptools.toolgroup.ToolNodeSpecification;
 import io.modelcontextprotocol.server.McpAsyncServerExchange;
 import io.modelcontextprotocol.server.McpServerFeatures.AsyncToolSpecification;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
@@ -23,21 +23,6 @@ public class AsyncToolGroupProvider
 
 	public AsyncToolGroupProvider() {
 		setToolNodeProvider(new SpringToolNodeProvider.Async());
-		setCallHandlerProvider(
-				new AbstractCallHandlerProvider<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>>() {
-					@Override
-					public BiFunction<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>> getCallHandler(
-							Method method, Object impl) {
-						return new AsyncMcpToolMethodCallback(getReturnMode(useStructuredOutput, method), method, impl,
-								getToolCallException());
-					}
-				});
-	}
-
-	@Override
-	protected AsyncToolSpecification buildSpecification(ToolNode toolNode,
-			BiFunction<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>> callHandler) {
-		return AsyncToolSpecification.builder().tool(convertToolNode(toolNode)).callHandler(callHandler).build();
 	}
 
 	@Override
@@ -49,6 +34,21 @@ public class AsyncToolGroupProvider
 	protected ReturnMode getReturnMode(boolean useStructuredOutput, Method mcpToolMethod) {
 		return useStructuredOutput ? ReturnMode.STRUCTURED
 				: ReactiveUtils.isReactiveReturnTypeOfVoid(mcpToolMethod) ? ReturnMode.VOID : ReturnMode.TEXT;
+	}
+
+	@Override
+	protected BiFunction<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>> getCallHandler(
+			Method mcpToolMethod, Object toolObject, boolean useStructuredOutput) {
+		return new AsyncMcpToolMethodCallback(getReturnMode(useStructuredOutput, mcpToolMethod), mcpToolMethod,
+				toolObject, getToolCallException());
+	}
+
+	@Override
+	protected ToolNodeSpecification<AsyncToolSpecification> getToolNodeSpecification(ToolNode toolNode,
+			BiFunction<McpAsyncServerExchange, CallToolRequest, Mono<CallToolResult>> callHandler) {
+		AsyncToolSpecification.Builder specBuilder = AsyncToolSpecification.builder().tool(convertToolNode(toolNode))
+				.callHandler(callHandler);
+		return new ToolNodeSpecification<AsyncToolSpecification>(toolNode, specBuilder.build());
 	}
 
 }

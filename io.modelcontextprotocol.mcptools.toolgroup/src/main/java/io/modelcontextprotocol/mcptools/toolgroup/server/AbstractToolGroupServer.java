@@ -12,9 +12,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
+import io.modelcontextprotocol.mcptools.toolgroup.ToolNodeSpecification;
 
 public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType, ExchangeType, CallToolRequestType, CallToolResultType>
-		implements ToolGroupServer<ServerType, ToolSpecType, ToolType, ExchangeType, CallToolRequestType, CallToolResultType> {
+		implements ToolGroupServer<ToolSpecType> {
 
 	private static Logger logger = LoggerFactory.getLogger(AbstractToolGroupServer.class);
 
@@ -25,9 +26,8 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 	public AbstractToolGroupServer() {
 		this(null);
 	}
-	
+
 	protected AbstractToolGroupServer(ServerType server) {
-		Objects.requireNonNull(server, "server must not be null");
 		this.server = server;
 		this.toolNodeToBiFunctionMap = new ConcurrentHashMap<ToolNode, BiFunction<ExchangeType, CallToolRequestType, CallToolResultType>>();
 		this.toolSpecs = new CopyOnWriteArrayList<ToolSpecType>();
@@ -36,7 +36,7 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 	protected void setServer(ServerType server) {
 		this.server = server;
 	}
-	
+
 	protected abstract void closeServer();
 
 	@Override
@@ -50,44 +50,60 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 
 	abstract protected void removeTool(ServerType server, String toolName);
 
-	@Override
-	public void addTool(ToolSpecType toolSpec) {
+	protected void addTools(List<ToolSpecType> toolSpecs) {
+		toolSpecs.forEach(s -> addTool(s));
+	}
+
+	protected void removeTools(List<String> toolNames) {
+		toolNames.forEach(tn -> removeTool(tn));
+	}
+
+	protected void addTool(ToolSpecType toolSpec) {
 		Objects.requireNonNull(toolSpec, "toolSpec must not be null");
 		ServerType s = getServer();
 		try {
 			addTool(s, toolSpec);
+			this.toolSpecs.add(toolSpec);
 			if (logger.isDebugEnabled()) {
 				logger.debug("added tool specification={} to sync server={}", toolSpec, s);
 			}
 		} catch (Exception e) {
-			handleAddError(toolSpec, e, true);
+			handleAddError(toolSpec, e);
 			throw e;
 		}
 	}
 
-	protected void handleAddError(ToolSpecType toolSpec, Exception e, boolean b) {
+	protected void handleAddError(ToolSpecType toolSpec, Exception e) {
 		if (logger.isErrorEnabled()) {
 			logger.error("Could not add tool specification=" + toolSpec, e);
 		}
 	}
 
-	@Override
-	public void removeTool(String toolName) {
-		Objects.requireNonNull(toolName, "toolName must not be null");
-		removeTool(this.server, toolName);
+	protected void handleRemoveError(String toolSpecName, Exception e) {
+		if (logger.isErrorEnabled()) {
+			logger.error("Could not remove tool specification name=" + toolSpecName, e);
+		}
 	}
 
-	@Override
-	public ServerType getServer() {
+	protected void removeTool(String toolName) {
+		Objects.requireNonNull(toolName, "toolName must not be null");
+		try {
+			removeTool(this.server, toolName);
+		} catch (Exception e) {
+			handleRemoveError(toolName, e);
+			throw e;
+		}
+	}
+
+	protected ServerType getServer() {
 		return server;
 	}
 
-	@Override
-	public List<ToolSpecType> getToolSpecs() {
+	protected List<ToolSpecType> getToolSpecs() {
 		return toolSpecs;
 	}
 
-	protected abstract ToolSpecType buildSpecification(ToolNode toolNode,
+	protected abstract ToolNodeSpecification<ToolSpecType> getToolNodeSpecification(ToolNode toolNode,
 			BiFunction<ExchangeType, CallToolRequestType, CallToolResultType> callHandler);
 
 }

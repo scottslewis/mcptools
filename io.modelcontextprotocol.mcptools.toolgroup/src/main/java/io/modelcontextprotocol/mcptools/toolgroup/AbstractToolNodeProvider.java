@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import io.modelcontextprotocol.mcptools.annotation.McpTool;
 import io.modelcontextprotocol.mcptools.annotation.McpTool.McpAnnotations;
 import io.modelcontextprotocol.mcptools.annotation.McpToolGroup;
-import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
 import io.modelcontextprotocol.mcptools.common.ToolAnnotationsNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
+import io.modelcontextprotocol.mcptools.common.util.StringUtils;
 
 public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodeProvider {
 
@@ -123,7 +123,8 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 	}
 
 	@Override
-	public ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group, boolean generateOutputSchema) {
+	public ToolNode getToolNode(McpTool mcpToolAnnotation, Method mcpToolMethod, GroupNode group,
+			boolean generateOutputSchema) {
 		String name = StringUtils.cleanAnnotationString(mcpToolAnnotation.name());
 		if (name == null) {
 			name = mcpToolMethod.getName();

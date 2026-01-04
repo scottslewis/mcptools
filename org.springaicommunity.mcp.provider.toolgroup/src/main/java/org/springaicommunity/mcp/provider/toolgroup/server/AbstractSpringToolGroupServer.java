@@ -1,7 +1,5 @@
 package org.springaicommunity.mcp.provider.toolgroup.server;
 
-import java.util.List;
-
 import org.springaicommunity.mcp.provider.SpringNodeConverter;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
@@ -16,7 +14,7 @@ public abstract class AbstractSpringToolGroupServer<ServerType, SpecificationTyp
 		AbstractToolGroupServer<ServerType, SpecificationType, Tool, ExchangeType, CallToolRequest, CallToolResultType> {
 
 	protected ToolNodeConverter<Tool> toolNodeConverter;
-	protected ToolGroupProvider<SpecificationType> toolGroupProvider;
+	protected ToolGroupProvider<SpecificationType, ExchangeType, CallToolRequest, CallToolResultType> toolGroupProvider;
 
 	public AbstractSpringToolGroupServer() {
 		this(null);
@@ -27,7 +25,8 @@ public abstract class AbstractSpringToolGroupServer<ServerType, SpecificationTyp
 		setToolNodeConverter(new SpringNodeConverter());
 	}
 
-	protected void setToolGroupProvider(ToolGroupProvider<SpecificationType> toolGroupProvider) {
+	protected void setToolGroupProvider(
+			ToolGroupProvider<SpecificationType, ExchangeType, CallToolRequest, CallToolResultType> toolGroupProvider) {
 		this.toolGroupProvider = toolGroupProvider;
 	}
 
@@ -37,13 +36,6 @@ public abstract class AbstractSpringToolGroupServer<ServerType, SpecificationTyp
 
 	protected Tool convertToolNode(ToolNode toolNode) {
 		return this.toolNodeConverter.convertFromToolNode(toolNode);
-	}
-
-	@Override
-	public void addToolGroup(Object instance, Class<?>... classes) {
-		this.toolGroupProvider.getToolGroupSpecifications(List.of(instance), classes).forEach(s -> {
-			addTool(this.server, s);
-		});
 	}
 
 }

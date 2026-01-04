@@ -7,14 +7,14 @@ import io.modelcontextprotocol.mcptools.json.JsonObjectMapper;
 public abstract class AbstractOutputSchemaGenerator<TypeType> implements OutputSchemaGenerator {
 
 	protected JsonObjectMapper mapper;
-	
+
 	public AbstractOutputSchemaGenerator() {
 	}
-	
+
 	protected void setJsonObjectMapper(JsonObjectMapper mapper) {
 		this.mapper = mapper;
 	}
-	
+
 	@Override
 	public String generateOutputSchema(Method mcpToolMethod) {
 		TypeType returnTypeArgument = getReturnTypeArgument(mcpToolMethod);
