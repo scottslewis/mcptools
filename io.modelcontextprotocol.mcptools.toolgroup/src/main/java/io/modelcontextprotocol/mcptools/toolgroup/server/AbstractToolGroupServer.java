@@ -125,12 +125,6 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 	}
 
 	@Override
-	public abstract boolean isAsync();
-
-	@Override
-	public abstract boolean isStateless();
-
-	@Override
 	public void addToolNode(ToolNode toolNode, Method toolMethod, Object instance) {
 		this.toolGroupProvider.getToolNodeSpecification(toolNode, toolMethod, instance, toolNode.getOutputSchema() != null);
 	}

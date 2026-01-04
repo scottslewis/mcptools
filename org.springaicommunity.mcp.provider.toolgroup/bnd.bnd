@@ -8,4 +8,6 @@
 	io.modelcontextprotocol.mcptools.annotation,\
 	slf4j.api,\
 	org.osgi.annotation.bundle,\
-	org.osgi.annotation.versioning
+	org.osgi.annotation.versioning,\
+	org.osgi.service.component.annotations,\
+	io.modelcontextprotocol.sdk.mcp
