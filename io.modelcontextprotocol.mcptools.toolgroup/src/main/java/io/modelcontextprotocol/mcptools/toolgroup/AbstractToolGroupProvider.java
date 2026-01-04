@@ -189,4 +189,12 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		return getToolGroupSpecifications(List.of(toolGroupObject), classes);
 	}
 
+	@Override
+	public ToolNodeSpecification<SpecificationType> getToolNodeSpecification(ToolNode toolNode, Method toolMethod,
+			Object instance, boolean outputSchema) {
+		BiFunction<ExchangeType, CallRequestType, CallResultType> callHandler = getCallHandler(toolMethod, instance, outputSchema);
+		return getToolNodeSpecification(toolNode, callHandler);
+	}
+
+
 }

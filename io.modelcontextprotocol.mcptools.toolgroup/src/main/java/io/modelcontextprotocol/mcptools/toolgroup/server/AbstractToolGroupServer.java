@@ -1,6 +1,7 @@
 package io.modelcontextprotocol.mcptools.toolgroup.server;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -129,5 +130,9 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 	@Override
 	public abstract boolean isStateless();
 
+	@Override
+	public void addToolNode(ToolNode toolNode, Method toolMethod, Object instance) {
+		this.toolGroupProvider.getToolNodeSpecification(toolNode, toolMethod, instance, toolNode.getOutputSchema() != null);
+	}
 
 }
