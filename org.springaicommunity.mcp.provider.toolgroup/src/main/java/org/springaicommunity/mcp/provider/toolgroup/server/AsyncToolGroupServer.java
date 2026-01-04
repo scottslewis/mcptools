@@ -57,12 +57,14 @@ public class AsyncToolGroupServer extends
 	}
 
 	@Override
-	public List<ToolNodeSpecification<AsyncToolSpecification>> addToolGroup(Object instance, Class<?>... classes) {
+	public List<ToolNode> addToolGroup(Object instance, Class<?>... classes) {
 		List<ToolNodeSpecification<AsyncToolSpecification>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
 		specs.forEach(s -> {
 			addTool(this.server, s.getSpecification());
 		});
-		return specs;
+		return specs.stream().map(sp -> {
+			return sp.getToolNode();
+		}).toList();
 	}
 
 }

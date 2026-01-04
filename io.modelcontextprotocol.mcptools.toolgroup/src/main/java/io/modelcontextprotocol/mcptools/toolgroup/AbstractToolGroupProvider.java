@@ -173,7 +173,8 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 				}).toList();
 	}
 
-	public List<ToolNodeSpecification<SpecificationType>> getToolGroupSpecifications(List<Object> toolObjects, Class<?>... classes) {
+	public List<ToolNodeSpecification<SpecificationType>> getToolGroupSpecifications(List<Object> toolObjects,
+			Class<?>... classes) {
 		return toolObjects.stream().map(toolObject -> {
 			return Stream.of(getClassesForObject(toolObject, classes)).map(toolClass -> {
 				GroupNode toolGroup = getToolGroup(toolClass);
@@ -187,6 +188,5 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 			Class<?>... classes) {
 		return getToolGroupSpecifications(List.of(toolGroupObject), classes);
 	}
-
 
 }

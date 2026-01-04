@@ -15,7 +15,7 @@ import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.toolgroup.ToolNodeSpecification;
 
 public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType, ExchangeType, CallToolRequestType, CallToolResultType>
-		implements ToolGroupServer<ToolSpecType> {
+		implements ToolGroupServer {
 
 	private static Logger logger = LoggerFactory.getLogger(AbstractToolGroupServer.class);
 

@@ -49,12 +49,14 @@ public class SyncToolGroupServer extends
 	}
 
 	@Override
-	public List<ToolNodeSpecification<SyncToolSpecification>> addToolGroup(Object instance, Class<?>... classes) {
+	public List<ToolNode> addToolGroup(Object instance, Class<?>... classes) {
 		List<ToolNodeSpecification<SyncToolSpecification>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
 		specs.forEach(s -> {
 			addTool(this.server, s.getSpecification());
 		});
-		return specs;
+		return specs.stream().map(sp -> {
+			return sp.getToolNode();
+		}).toList();
 	}
 
 	@Override
