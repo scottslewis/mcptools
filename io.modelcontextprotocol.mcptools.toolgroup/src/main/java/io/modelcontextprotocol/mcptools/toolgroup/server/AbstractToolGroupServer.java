@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.modelcontextprotocol.mcptools.common.ToolNode;
+import io.modelcontextprotocol.mcptools.common.ToolNodeConverter;
+import io.modelcontextprotocol.mcptools.toolgroup.ToolGroupProvider;
 import io.modelcontextprotocol.mcptools.toolgroup.ToolNodeSpecification;
 
 public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType, ExchangeType, CallToolRequestType, CallToolResultType>
@@ -20,15 +22,12 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 	private static Logger logger = LoggerFactory.getLogger(AbstractToolGroupServer.class);
 
 	protected ServerType server;
+	protected ToolGroupProvider<ToolSpecType, ExchangeType, CallToolRequestType, CallToolResultType> toolGroupProvider;
+	protected ToolNodeConverter<ToolType> toolNodeConverter;
 	protected final Map<ToolNode, BiFunction<ExchangeType, CallToolRequestType, CallToolResultType>> toolNodeToBiFunctionMap;
 	protected final CopyOnWriteArrayList<ToolSpecType> toolSpecs;
 
 	public AbstractToolGroupServer() {
-		this(null);
-	}
-
-	protected AbstractToolGroupServer(ServerType server) {
-		this.server = server;
 		this.toolNodeToBiFunctionMap = new ConcurrentHashMap<ToolNode, BiFunction<ExchangeType, CallToolRequestType, CallToolResultType>>();
 		this.toolSpecs = new CopyOnWriteArrayList<ToolSpecType>();
 	}
@@ -37,6 +36,13 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 		this.server = server;
 	}
 
+	protected void setToolGroupProvider(ToolGroupProvider<ToolSpecType, ExchangeType, CallToolRequestType, CallToolResultType> toolGroupProvider) {
+		this.toolGroupProvider = toolGroupProvider;
+	}
+	
+	protected void setToolNodeConverter(ToolNodeConverter<ToolType> toolNodeConverter) {
+		this.toolNodeConverter = toolNodeConverter;
+	}
 	protected abstract void closeServer();
 
 	@Override
@@ -105,5 +111,23 @@ public abstract class AbstractToolGroupServer<ServerType, ToolSpecType, ToolType
 
 	protected abstract ToolNodeSpecification<ToolSpecType> getToolNodeSpecification(ToolNode toolNode,
 			BiFunction<ExchangeType, CallToolRequestType, CallToolResultType> callHandler);
+
+	@Override
+	public List<ToolNode> addToolGroup(Object instance, Class<?>... classes) {
+		List<ToolNodeSpecification<ToolSpecType>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
+		specs.forEach(s -> {
+			addTool(this.server, s.getSpecification());
+		});
+		return specs.stream().map(sp -> {
+			return sp.getToolNode();
+		}).toList();
+	}
+
+	@Override
+	public abstract boolean isAsync();
+
+	@Override
+	public abstract boolean isStateless();
+
 
 }

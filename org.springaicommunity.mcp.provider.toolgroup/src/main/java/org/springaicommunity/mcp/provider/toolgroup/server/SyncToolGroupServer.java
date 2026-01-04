@@ -1,6 +1,5 @@
 package org.springaicommunity.mcp.provider.toolgroup.server;
 
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springaicommunity.mcp.provider.toolgroup.SyncToolGroupProvider;
@@ -13,15 +12,10 @@ import io.modelcontextprotocol.server.McpSyncServerExchange;
 import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 
-public class SyncToolGroupServer extends
-		AbstractSpringToolGroupServer<McpSyncServer, SyncToolSpecification, McpSyncServerExchange, CallToolResult> {
+public class SyncToolGroupServer
+		extends AbstractSpringToolGroupServer<McpSyncServer, SyncToolSpecification, McpSyncServerExchange, CallToolResult> {
 
 	public SyncToolGroupServer() {
-		this(null);
-	}
-
-	public SyncToolGroupServer(McpSyncServer server) {
-		super(server);
 		setToolGroupProvider(new SyncToolGroupProvider());
 	}
 
@@ -49,22 +43,21 @@ public class SyncToolGroupServer extends
 	}
 
 	@Override
-	public List<ToolNode> addToolGroup(Object instance, Class<?>... classes) {
-		List<ToolNodeSpecification<SyncToolSpecification>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
-		specs.forEach(s -> {
-			addTool(this.server, s.getSpecification());
-		});
-		return specs.stream().map(sp -> {
-			return sp.getToolNode();
-		}).toList();
-	}
-
-	@Override
 	protected ToolNodeSpecification<SyncToolSpecification> getToolNodeSpecification(ToolNode toolNode,
 			BiFunction<McpSyncServerExchange, CallToolRequest, CallToolResult> callHandler) {
 		SyncToolSpecification.Builder specBuilder = SyncToolSpecification.builder().tool(convertToolNode(toolNode))
 				.callHandler(callHandler);
 		return new ToolNodeSpecification<SyncToolSpecification>(toolNode, specBuilder.build());
+	}
+
+	@Override
+	public boolean isAsync() {
+		return false;
+	}
+
+	@Override
+	public boolean isStateless() {
+		return false;
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.springaicommunity.mcp.provider.toolgroup.server;
 
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.springaicommunity.mcp.provider.toolgroup.AsyncToolGroupProvider;
@@ -14,15 +13,10 @@ import io.modelcontextprotocol.spec.McpSchema.CallToolRequest;
 import io.modelcontextprotocol.spec.McpSchema.CallToolResult;
 import reactor.core.publisher.Mono;
 
-public class AsyncToolGroupServer extends
-		AbstractSpringToolGroupServer<McpAsyncServer, AsyncToolSpecification, McpAsyncServerExchange, Mono<CallToolResult>> {
+public class AsyncToolGroupServer
+		extends AbstractSpringToolGroupServer<McpAsyncServer, AsyncToolSpecification, McpAsyncServerExchange, Mono<CallToolResult>> {
 
 	public AsyncToolGroupServer() {
-		this(null);
-	}
-
-	public AsyncToolGroupServer(McpAsyncServer server) {
-		super(server);
 		setToolGroupProvider(new AsyncToolGroupProvider());
 	}
 
@@ -57,14 +51,13 @@ public class AsyncToolGroupServer extends
 	}
 
 	@Override
-	public List<ToolNode> addToolGroup(Object instance, Class<?>... classes) {
-		List<ToolNodeSpecification<AsyncToolSpecification>> specs = this.toolGroupProvider.getToolGroupSpecifications(instance, classes);
-		specs.forEach(s -> {
-			addTool(this.server, s.getSpecification());
-		});
-		return specs.stream().map(sp -> {
-			return sp.getToolNode();
-		}).toList();
+	public boolean isAsync() {
+		return true;
+	}
+
+	@Override
+	public boolean isStateless() {
+		return false;
 	}
 
 }

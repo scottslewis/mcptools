@@ -17,4 +17,7 @@ public interface ToolGroupServer extends Closeable {
 
 	List<ToolNode> addToolGroup(Object instance, Class<?>... classes);
 
+	boolean isAsync();
+	
+	boolean isStateless();
 }
