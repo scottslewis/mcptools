@@ -1,7 +1,7 @@
 package io.modelcontextprotocol.mcptools.transport.server;
 
-public interface McpServerTransportProvider<AsyncVoidType> extends McpServerTransportProviderBase<AsyncVoidType> {
+public interface McpServerTransportProvider<AsyncVoidType,ServerSessionType> extends McpServerTransportProviderBase<AsyncVoidType> {
 
-	void setSessionFactory(McpServerSessionFactory factory);
-	
+	void setSessionFactory(McpServerSessionFactory<AsyncVoidType, ServerSessionType> factory);
+
 }

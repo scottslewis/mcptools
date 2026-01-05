@@ -7,7 +7,7 @@ import io.modelcontextprotocol.mcptools.transport.McpTransport;
 
 public interface McpClientTransport<AsyncVoidType, AsyncRPCMessageType> extends McpTransport<AsyncVoidType> {
 
-	AsyncVoidType connect(Function<AsyncRPCMessageType,AsyncRPCMessageType> handler);
+	AsyncVoidType connect(Function<AsyncRPCMessageType, AsyncRPCMessageType> handler);
 
 	default void setExceptionHandler(Consumer<Throwable> handler) {
 	}
