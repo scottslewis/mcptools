@@ -102,7 +102,7 @@ public abstract class AbstractToolNodeProvider<GroupType> implements ToolNodePro
 	}
 
 	protected String qualifyToolName(String toolName, GroupNode group) {
-		return (group == null) ? toolName : group.getFullyQualifiedName(SEPARATOR) + SEPARATOR + toolName;
+		return (group == null) ? toolName : group.getFullyQualifiedName() + SEPARATOR + toolName;
 	}
 
 	protected ToolAnnotationsNode getToolAnnotationsNode(McpAnnotations mcpToolAnnotations, ToolNode toolNode) {

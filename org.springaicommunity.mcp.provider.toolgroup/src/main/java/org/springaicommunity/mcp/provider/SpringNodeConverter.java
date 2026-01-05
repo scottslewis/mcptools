@@ -42,8 +42,12 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 	protected ToolAnnotationsNodeConverter toolAnnotationsNodeConverter = new ToolAnnotationsNodeConverter();
 	protected ToolNodeConverter<Tool> toolNodeConverter = new SpringToolNodeConverter();
 
-	McpJsonMapper jsonMapper = McpJsonDefaults.getDefaultMcpJsonMapper();
+	McpJsonMapper jsonMapper;
 
+	public SpringNodeConverter() {
+		this.jsonMapper = McpJsonDefaults.getDefaultMcpJsonMapper();
+	}
+	
 	public class SpringGroupNodeConverter implements GroupNodeConverter<Group> {
 
 		@Override
@@ -72,8 +76,10 @@ public class SpringNodeConverter implements ToolNodeConverter<Tool>, GroupNodeCo
 			gtn.setDescription(group.description());
 			gtn.setMeta(group.meta());
 			McpSchema.Group parent = group.parent();
+			GroupNode convertedParent = null;
 			if (parent != null) {
-				gtn.setParent(convertToGroupNode(parent));
+				convertedParent = convertToGroupNode(parent);
+				convertedParent.addChildGroup(gtn);
 			}
 			return gtn;
 		}

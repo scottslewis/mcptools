@@ -22,4 +22,10 @@ public class PromptArgumentNode extends BaseNode {
 				+ description + ", meta=" + meta + "]";
 	}
 
+	@Override
+	public String getFullyQualifiedName() {
+		return name;
+	}
+
+	
 }

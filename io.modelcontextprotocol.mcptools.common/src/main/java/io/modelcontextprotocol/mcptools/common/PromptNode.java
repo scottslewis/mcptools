@@ -27,7 +27,7 @@ public class PromptNode extends BaseLeafNode {
 
 	@Override
 	public String toString() {
-		return "PromptNode [promptArguments=" + promptArguments + ", name=" + name + ", title=" + title
+		return "PromptNode [promptArguments=" + promptArguments + ", name=" + name + ", fqName=" + getFullyQualifiedName() + ", title=" + title
 				+ ", description=" + description + ", meta=" + meta + "]";
 	}
 

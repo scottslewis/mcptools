@@ -3,8 +3,12 @@ package io.modelcontextprotocol.mcptools.common;
 import java.util.Map;
 import java.util.Objects;
 
-public class BaseNode {
+public abstract class BaseNode {
 
+	public static final String DEFAULT_SEPARATOR = ".";
+	
+	protected final String nameSeparator;
+	
 	protected final String name;
 
 	protected String title;
@@ -16,6 +20,13 @@ public class BaseNode {
 	protected BaseNode(String name) {
 		Objects.requireNonNull(name, "name must not be null");
 		this.name = name;
+		this.nameSeparator = DEFAULT_SEPARATOR;
+	}
+
+	protected BaseNode(String name, String nameSeparator) {
+		Objects.requireNonNull(name, "name must not be null");
+		this.name = name;
+		this.nameSeparator = nameSeparator;
 	}
 
 	public String getName() {
@@ -63,4 +74,5 @@ public class BaseNode {
 		return Objects.equals(name, other.name);
 	}
 
+	public abstract String getFullyQualifiedName();
 }

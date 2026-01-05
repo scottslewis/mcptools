@@ -19,7 +19,11 @@ public class GroupNode extends BaseNode {
 	protected Function<GroupNode, ?> converter;
 
 	public GroupNode(String name) {
-		super(name);
+		this(name, DEFAULT_SEPARATOR);
+	}
+
+	public GroupNode(String name, String nameSeparator) {
+		super(name, nameSeparator);
 		this.childGroups = new CopyOnWriteArrayList<GroupNode>();
 		this.childTools = new CopyOnWriteArrayList<ToolNode>();
 		this.childPrompts = new CopyOnWriteArrayList<PromptNode>();
@@ -29,20 +33,25 @@ public class GroupNode extends BaseNode {
 	public GroupNode getParent() {
 		return this.parent;
 	}
-
-	public boolean isRootNode() {
-		return this.parent == null;
+	
+	public GroupNode getRoot() {
+		GroupNode parent = this.parent;
+		if (parent == null) {
+			return this;
+		} else {
+			return parent.getRoot();
+		}
 	}
 
-	public void setParent(GroupNode parent) {
-		this.parent = parent;
+	public boolean isRoot() {
+		return this.parent == null;
 	}
 
 	public boolean addChildGroup(GroupNode childGroup) {
 		synchronized (childGroups) {
 			boolean added = childGroups.add(childGroup);
 			if (added) {
-				childGroup.setParent(this);
+				childGroup.parent = this;
 				return true;
 			}
 			return false;
@@ -52,7 +61,7 @@ public class GroupNode extends BaseNode {
 	public boolean removeChildGroup(GroupNode childGroup) {
 		synchronized (childGroups) {
 			if (childGroups.remove(childGroup)) {
-				childGroup.setParent(null);
+				childGroup.parent = null;
 				return true;
 			}
 			return false;
@@ -141,22 +150,23 @@ public class GroupNode extends BaseNode {
 		return this.childPrompts;
 	}
 
-	protected String getToolGroupName(StringBuffer sb, GroupNode tg, String separator) {
+	protected String getFullyQualifiedName(StringBuffer sb, GroupNode tg) {
 		GroupNode parent = tg.getParent();
 		if (parent != null) {
-			String parentName = getToolGroupName(sb, parent, separator);
-			return new StringBuffer(parentName).append(separator).append(tg.getName()).toString();
+			String parentName = getFullyQualifiedName(sb, parent);
+			return new StringBuffer(parentName).append(this.nameSeparator).append(tg.getName()).toString();
 		}
 		return tg.getName();
 	}
 
-	public String getFullyQualifiedName(String separator) {
-		return getToolGroupName(new StringBuffer(), this, separator);
+	@Override
+	public String getFullyQualifiedName() {
+		return getFullyQualifiedName(new StringBuffer(), this);
 	}
 
 	@Override
 	public String toString() {
-		return "GroupNode [name=" + name + ", isRoot=" + isRootNode() + ", title=" + title + ", description="
+		return "GroupNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", isRoot=" + isRoot() + ", title=" + title + ", description="
 				+ description + ", meta=" + meta + ", childGroups=" + childGroups + ", childTools=" + childTools
 				+ ", childPrompts=" + childPrompts + "]";
 	}

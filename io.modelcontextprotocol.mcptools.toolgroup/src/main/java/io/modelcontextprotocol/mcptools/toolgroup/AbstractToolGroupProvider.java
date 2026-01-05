@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import io.modelcontextprotocol.mcptools.annotation.McpTool;
 import io.modelcontextprotocol.mcptools.annotation.McpToolGroup;
+import io.modelcontextprotocol.mcptools.common.BaseNode;
 import io.modelcontextprotocol.mcptools.common.GroupNode;
 import io.modelcontextprotocol.mcptools.common.ToolNode;
 import io.modelcontextprotocol.mcptools.common.util.StringUtils;
@@ -16,8 +17,6 @@ import io.modelcontextprotocol.mcptools.json.JsonObjectMapper;
 
 public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, GroupType, ExchangeType, CallRequestType, CallResultType>
 		implements ToolGroupProvider<SpecificationType, ExchangeType, CallRequestType, CallResultType> {
-
-	public static final String SEPARATOR = ".";
 
 	protected boolean generateOutputSchema = true;
 	protected JsonObjectMapper jsonMapper;
@@ -40,7 +39,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		groupNode.setTitle(StringUtils.cleanAnnotationString(title));
 		groupNode.setDescription(StringUtils.cleanAnnotationString(description));
 		if (parent != null) {
-			groupNode.setParent(parent);
+			parent.addChildGroup(groupNode);
 		}
 		return groupNode;
 	}
@@ -72,7 +71,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 	protected String[] splitPackageName(String packageName) {
 		String parentPackageName = null;
 		String childPackageName = null;
-		int lastDotIndex = packageName.lastIndexOf(SEPARATOR);
+		int lastDotIndex = packageName.lastIndexOf(BaseNode.DEFAULT_SEPARATOR);
 		if (lastDotIndex > 0 && lastDotIndex < packageName.length()) {
 			parentPackageName = packageName.substring(0, lastDotIndex);
 			childPackageName = packageName.substring(lastDotIndex + 1);
@@ -86,7 +85,7 @@ public abstract class AbstractToolGroupProvider<SpecificationType, ToolType, Gro
 		if (StringUtils.hasText(splitPackageName[0])) {
 			Package parentPackage = getParentPackage(splitPackageName[0], classloader);
 			if (StringUtils.hasText(splitPackageName[1])) {
-				nameSuffix = splitPackageName[1] + (StringUtils.hasText(nameSuffix) ? SEPARATOR + nameSuffix : "");
+				nameSuffix = splitPackageName[1] + (StringUtils.hasText(nameSuffix) ? BaseNode.DEFAULT_SEPARATOR + nameSuffix : "");
 			}
 			if (parentPackage != null) {
 				parentGroup = getToolGroupNodeFromPackage(parentPackage, classloader, nameSuffix);

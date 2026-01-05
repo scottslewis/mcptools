@@ -3,12 +3,15 @@ package io.modelcontextprotocol.mcptools.common;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 public class BaseLeafNode extends BaseNode {
 
 	protected BaseLeafNode(String name) {
 		super(name);
+	}
+
+	protected BaseLeafNode(String name, String nameSeparator) {
+		super(name, nameSeparator);
 	}
 
 	protected List<GroupNode> parentGroups = new CopyOnWriteArrayList<GroupNode>();
@@ -26,16 +29,14 @@ public class BaseLeafNode extends BaseNode {
 		return this.parentGroups;
 	}
 
-	protected GroupNode getTopGroupNode(GroupNode current) {
-		GroupNode parent = current.getParent();
-		if (parent == null) {
-			return current;
-		} else
-			return getTopGroupNode(parent);
+	public List<GroupNode> getParentGroupRoots() {
+		List<GroupNode> parentGroups = this.parentGroups;
+		return parentGroups.stream().map(GroupNode::getRoot).toList();
 	}
 
-	public List<GroupNode> getRoots() {
-		return getParentGroups().stream().map(pgn -> getTopGroupNode(pgn)).collect(Collectors.toList());
+	@Override
+	public String getFullyQualifiedName() {
+		return name;
 	}
 
 }
