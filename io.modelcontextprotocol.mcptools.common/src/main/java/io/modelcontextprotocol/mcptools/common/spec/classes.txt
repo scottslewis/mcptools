@@ -1,0 +1,5409 @@
+// File: JSONRPCMessage.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for JSON-RPC message types
+ */
+public interface JSONRPCMessage {
+}
+
+// File: JSONRPCConstants.java
+package com.example.jsonrpc;
+
+/**
+ * Constants for JSON-RPC protocol
+ */
+public final class JSONRPCConstants {
+    private JSONRPCConstants() {
+        // Prevent instantiation
+    }
+
+    public static final String LATEST_PROTOCOL_VERSION = "2025-11-25";
+    public static final String JSONRPC_VERSION = "2.0";
+
+    // JSON-RPC error codes
+    public static final int PARSE_ERROR = -32700;
+    public static final int INVALID_REQUEST = -32600;
+    public static final int METHOD_NOT_FOUND = -32601;
+    public static final int INVALID_PARAMS = -32602;
+    public static final int INTERNAL_ERROR = -32603;
+
+    // Custom error codes
+    public static final int URL_ELICITATION_REQUIRED = -32042;
+}
+
+// File: ProgressToken.java
+package com.example.jsonrpc;
+
+/**
+ * Progress token can be either a string or a number
+ */
+public class ProgressToken {
+    private String stringValue;
+    private Number numberValue;
+    private boolean isString;
+
+    public ProgressToken(String value) {
+        this.stringValue = value;
+        this.isString = true;
+    }
+
+    public ProgressToken(Number value) {
+        this.numberValue = value;
+        this.isString = false;
+    }
+
+    public boolean isString() {
+        return isString;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public Number getNumberValue() {
+        return numberValue;
+    }
+
+    public Object getValue() {
+        return isString ? stringValue : numberValue;
+    }
+
+    @Override
+    public String toString() {
+        return isString ? stringValue : String.valueOf(numberValue);
+    }
+}
+
+// File: Cursor.java
+package com.example.jsonrpc;
+
+/**
+ * Cursor type for pagination
+ */
+public class Cursor {
+    private final String value;
+
+    public Cursor(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+}
+
+// File: RequestId.java
+package com.example.jsonrpc;
+
+/**
+ * Request ID can be either a string or a number
+ */
+public class RequestId {
+    private String stringValue;
+    private Number numberValue;
+    private boolean isString;
+
+    public RequestId(String value) {
+        this.stringValue = value;
+        this.isString = true;
+    }
+
+    public RequestId(Number value) {
+        this.numberValue = value;
+        this.isString = false;
+    }
+
+    public boolean isString() {
+        return isString;
+    }
+
+    public String getStringValue() {
+        return stringValue;
+    }
+
+    public Number getNumberValue() {
+        return numberValue;
+    }
+
+    public Object getValue() {
+        return isString ? stringValue : numberValue;
+    }
+
+    @Override
+    public String toString() {
+        return isString ? stringValue : String.valueOf(numberValue);
+    }
+}
+
+// File: RequestParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base request parameters
+ */
+public class RequestParams {
+    private RequestMeta _meta;
+
+    public RequestMeta get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(RequestMeta _meta) {
+        this._meta = _meta;
+    }
+
+    public static class RequestMeta {
+        private ProgressToken progressToken;
+        private Map<String, Object> additionalProperties;
+
+        public ProgressToken getProgressToken() {
+            return progressToken;
+        }
+
+        public void setProgressToken(ProgressToken progressToken) {
+            this.progressToken = progressToken;
+        }
+
+        public Map<String, Object> getAdditionalProperties() {
+            return additionalProperties;
+        }
+
+        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties = additionalProperties;
+        }
+    }
+}
+
+// File: TaskMetadata.java
+package com.example.jsonrpc;
+
+/**
+ * Task metadata
+ */
+public class TaskMetadata {
+    private Integer ttl;
+
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(Integer ttl) {
+        this.ttl = ttl;
+    }
+}
+
+// File: TaskAugmentedRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Request parameters augmented with task metadata
+ */
+public class TaskAugmentedRequestParams extends RequestParams {
+    private TaskMetadata task;
+
+    public TaskMetadata getTask() {
+        return task;
+    }
+
+    public void setTask(TaskMetadata task) {
+        this.task = task;
+    }
+}
+
+// File: Request.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base request interface
+ */
+public interface Request {
+    String getMethod();
+    void setMethod(String method);
+    
+    Map<String, Object> getParams();
+    void setParams(Map<String, Object> params);
+}
+
+// File: NotificationParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base notification parameters
+ */
+public class NotificationParams {
+    private Map<String, Object> _meta;
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: Notification.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base notification interface
+ */
+public interface Notification {
+    String getMethod();
+    void setMethod(String method);
+    
+    Map<String, Object> getParams();
+    void setParams(Map<String, Object> params);
+}
+
+// File: Result.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base result interface
+ */
+public interface Result {
+    Map<String, Object> get_meta();
+    void set_meta(Map<String, Object> _meta);
+    
+    Map<String, Object> getAdditionalProperties();
+    void setAdditionalProperties(Map<String, Object> additionalProperties);
+}
+
+// File: Error.java
+package com.example.jsonrpc;
+
+/**
+ * JSON-RPC error
+ */
+public class Error {
+    private int code;
+    private String message;
+    private Object data;
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+}
+
+// File: JSONRPCRequest.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * JSON-RPC request
+ */
+public class JSONRPCRequest implements Request, JSONRPCMessage {
+    private String jsonrpc = JSONRPCConstants.JSONRPC_VERSION;
+    private RequestId id;
+    private String method;
+    private Map<String, Object> params;
+
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    public void setJsonrpc(String jsonrpc) {
+        this.jsonrpc = jsonrpc;
+    }
+
+    public RequestId getId() {
+        return id;
+    }
+
+    public void setId(RequestId id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    @Override
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    @Override
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+}
+
+// File: JSONRPCNotification.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * JSON-RPC notification
+ */
+public class JSONRPCNotification implements Notification, JSONRPCMessage {
+    private String jsonrpc = JSONRPCConstants.JSONRPC_VERSION;
+    private String method;
+    private Map<String, Object> params;
+
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    public void setJsonrpc(String jsonrpc) {
+        this.jsonrpc = jsonrpc;
+    }
+
+    @Override
+    public String getMethod() {
+        return method;
+    }
+
+    @Override
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
+    @Override
+    public Map<String, Object> getParams() {
+        return params;
+    }
+
+    @Override
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+}
+
+// File: JSONRPCResultResponse.java
+package com.example.jsonrpc;
+
+/**
+ * JSON-RPC result response
+ */
+public class JSONRPCResultResponse implements JSONRPCResponse {
+    private String jsonrpc = JSONRPCConstants.JSONRPC_VERSION;
+    private RequestId id;
+    private Result result;
+
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    public void setJsonrpc(String jsonrpc) {
+        this.jsonrpc = jsonrpc;
+    }
+
+    public RequestId getId() {
+        return id;
+    }
+
+    public void setId(RequestId id) {
+        this.id = id;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
+    }
+}
+
+// File: JSONRPCErrorResponse.java
+package com.example.jsonrpc;
+
+/**
+ * JSON-RPC error response
+ */
+public class JSONRPCErrorResponse implements JSONRPCResponse {
+    private String jsonrpc = JSONRPCConstants.JSONRPC_VERSION;
+    private RequestId id;
+    private Error error;
+
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    public void setJsonrpc(String jsonrpc) {
+        this.jsonrpc = jsonrpc;
+    }
+
+    public RequestId getId() {
+        return id;
+    }
+
+    public void setId(RequestId id) {
+        this.id = id;
+    }
+
+    public Error getError() {
+        return error;
+    }
+
+    public void setError(Error error) {
+        this.error = error;
+    }
+}
+
+// File: JSONRPCResponse.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for JSON-RPC responses
+ */
+public interface JSONRPCResponse extends JSONRPCMessage {
+}
+
+// File: URLElicitationRequiredError.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * URL elicitation required error
+ */
+public class URLElicitationRequiredError {
+    private String jsonrpc = JSONRPCConstants.JSONRPC_VERSION;
+    private RequestId id;
+    private URLElicitationError error;
+
+    public String getJsonrpc() {
+        return jsonrpc;
+    }
+
+    public void setJsonrpc(String jsonrpc) {
+        this.jsonrpc = jsonrpc;
+    }
+
+    public RequestId getId() {
+        return id;
+    }
+
+    public void setId(RequestId id) {
+        this.id = id;
+    }
+
+    public URLElicitationError getError() {
+        return error;
+    }
+
+    public void setError(URLElicitationError error) {
+        this.error = error;
+    }
+
+    public static class URLElicitationError extends Error {
+        private URLElicitationData data;
+
+        @Override
+        public int getCode() {
+            return JSONRPCConstants.URL_ELICITATION_REQUIRED;
+        }
+
+        @Override
+        public URLElicitationData getData() {
+            return data;
+        }
+
+        public void setData(URLElicitationData data) {
+            this.data = data;
+        }
+    }
+
+    public static class URLElicitationData {
+        private List<ElicitRequestURLParams> elicitations;
+        private Map<String, Object> additionalProperties;
+
+        public List<ElicitRequestURLParams> getElicitations() {
+            return elicitations;
+        }
+
+        public void setElicitations(List<ElicitRequestURLParams> elicitations) {
+            this.elicitations = elicitations;
+        }
+
+        public Map<String, Object> getAdditionalProperties() {
+            return additionalProperties;
+        }
+
+        public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+            this.additionalProperties = additionalProperties;
+        }
+    }
+}
+
+// File: EmptyResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Empty result
+ */
+public class EmptyResult implements Result {
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: CancelledNotificationParams.java
+package com.example.jsonrpc;
+
+/**
+ * Cancelled notification parameters
+ */
+public class CancelledNotificationParams extends NotificationParams {
+    private RequestId requestId;
+    private String reason;
+
+    public RequestId getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(RequestId requestId) {
+        this.requestId = requestId;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+}
+
+// File: CancelledNotification.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Cancelled notification
+ */
+public class CancelledNotification extends JSONRPCNotification {
+    private CancelledNotificationParams params;
+
+    public CancelledNotification() {
+        setMethod("notifications/cancelled");
+    }
+
+    public CancelledNotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(CancelledNotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: ClientCapabilities.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Client capabilities
+ */
+public class ClientCapabilities {
+    private Map<String, Object> experimental;
+    private RootsCapability roots;
+    private SamplingCapability sampling;
+    private ElicitationCapability elicitation;
+    private TasksCapability tasks;
+
+    public Map<String, Object> getExperimental() {
+        return experimental;
+    }
+
+    public void setExperimental(Map<String, Object> experimental) {
+        this.experimental = experimental;
+    }
+
+    public RootsCapability getRoots() {
+        return roots;
+    }
+
+    public void setRoots(RootsCapability roots) {
+        this.roots = roots;
+    }
+
+    public SamplingCapability getSampling() {
+        return sampling;
+    }
+
+    public void setSampling(SamplingCapability sampling) {
+        this.sampling = sampling;
+    }
+
+    public ElicitationCapability getElicitation() {
+        return elicitation;
+    }
+
+    public void setElicitation(ElicitationCapability elicitation) {
+        this.elicitation = elicitation;
+    }
+
+    public TasksCapability getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(TasksCapability tasks) {
+        this.tasks = tasks;
+    }
+
+    public static class RootsCapability {
+        private Boolean listChanged;
+
+        public Boolean getListChanged() {
+            return listChanged;
+        }
+
+        public void setListChanged(Boolean listChanged) {
+            this.listChanged = listChanged;
+        }
+    }
+
+    public static class SamplingCapability {
+        private Object context;
+        private Object tools;
+
+        public Object getContext() {
+            return context;
+        }
+
+        public void setContext(Object context) {
+            this.context = context;
+        }
+
+        public Object getTools() {
+            return tools;
+        }
+
+        public void setTools(Object tools) {
+            this.tools = tools;
+        }
+    }
+
+    public static class ElicitationCapability {
+        private Object form;
+        private Object url;
+
+        public Object getForm() {
+            return form;
+        }
+
+        public void setForm(Object form) {
+            this.form = form;
+        }
+
+        public Object getUrl() {
+            return url;
+        }
+
+        public void setUrl(Object url) {
+            this.url = url;
+        }
+    }
+
+    public static class TasksCapability {
+        private Object list;
+        private Object cancel;
+        private TaskRequestsCapability requests;
+
+        public Object getList() {
+            return list;
+        }
+
+        public void setList(Object list) {
+            this.list = list;
+        }
+
+        public Object getCancel() {
+            return cancel;
+        }
+
+        public void setCancel(Object cancel) {
+            this.cancel = cancel;
+        }
+
+        public TaskRequestsCapability getRequests() {
+            return requests;
+        }
+
+        public void setRequests(TaskRequestsCapability requests) {
+            this.requests = requests;
+        }
+    }
+
+    public static class TaskRequestsCapability {
+        private TaskSamplingCapability sampling;
+        private TaskElicitationCapability elicitation;
+
+        public TaskSamplingCapability getSampling() {
+            return sampling;
+        }
+
+        public void setSampling(TaskSamplingCapability sampling) {
+            this.sampling = sampling;
+        }
+
+        public TaskElicitationCapability getElicitation() {
+            return elicitation;
+        }
+
+        public void setElicitation(TaskElicitationCapability elicitation) {
+            this.elicitation = elicitation;
+        }
+    }
+
+    public static class TaskSamplingCapability {
+        private Object createMessage;
+
+        public Object getCreateMessage() {
+            return createMessage;
+        }
+
+        public void setCreateMessage(Object createMessage) {
+            this.createMessage = createMessage;
+        }
+    }
+
+    public static class TaskElicitationCapability {
+        private Object create;
+
+        public Object getCreate() {
+            return create;
+        }
+
+        public void setCreate(Object create) {
+            this.create = create;
+        }
+    }
+}
+
+// File: ServerCapabilities.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Server capabilities
+ */
+public class ServerCapabilities {
+    private Map<String, Object> experimental;
+    private Object logging;
+    private Object completions;
+    private PromptsCapability prompts;
+    private ResourcesCapability resources;
+    private ToolsCapability tools;
+    private ServerTasksCapability tasks;
+
+    public Map<String, Object> getExperimental() {
+        return experimental;
+    }
+
+    public void setExperimental(Map<String, Object> experimental) {
+        this.experimental = experimental;
+    }
+
+    public Object getLogging() {
+        return logging;
+    }
+
+    public void setLogging(Object logging) {
+        this.logging = logging;
+    }
+
+    public Object getCompletions() {
+        return completions;
+    }
+
+    public void setCompletions(Object completions) {
+        this.completions = completions;
+    }
+
+    public PromptsCapability getPrompts() {
+        return prompts;
+    }
+
+    public void setPrompts(PromptsCapability prompts) {
+        this.prompts = prompts;
+    }
+
+    public ResourcesCapability getResources() {
+        return resources;
+    }
+
+    public void setResources(ResourcesCapability resources) {
+        this.resources = resources;
+    }
+
+    public ToolsCapability getTools() {
+        return tools;
+    }
+
+    public void setTools(ToolsCapability tools) {
+        this.tools = tools;
+    }
+
+    public ServerTasksCapability getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(ServerTasksCapability tasks) {
+        this.tasks = tasks;
+    }
+
+    public static class PromptsCapability {
+        private Boolean listChanged;
+
+        public Boolean getListChanged() {
+            return listChanged;
+        }
+
+        public void setListChanged(Boolean listChanged) {
+            this.listChanged = listChanged;
+        }
+    }
+
+    public static class ResourcesCapability {
+        private Boolean subscribe;
+        private Boolean listChanged;
+
+        public Boolean getSubscribe() {
+            return subscribe;
+        }
+
+        public void setSubscribe(Boolean subscribe) {
+            this.subscribe = subscribe;
+        }
+
+        public Boolean getListChanged() {
+            return listChanged;
+        }
+
+        public void setListChanged(Boolean listChanged) {
+            this.listChanged = listChanged;
+        }
+    }
+
+    public static class ToolsCapability {
+        private Boolean listChanged;
+
+        public Boolean getListChanged() {
+            return listChanged;
+        }
+
+        public void setListChanged(Boolean listChanged) {
+            this.listChanged = listChanged;
+        }
+    }
+
+    public static class ServerTasksCapability {
+        private Object list;
+        private Object cancel;
+        private ServerTaskRequestsCapability requests;
+
+        public Object getList() {
+            return list;
+        }
+
+        public void setList(Object list) {
+            this.list = list;
+        }
+
+        public Object getCancel() {
+            return cancel;
+        }
+
+        public void setCancel(Object cancel) {
+            this.cancel = cancel;
+        }
+
+        public ServerTaskRequestsCapability getRequests() {
+            return requests;
+        }
+
+        public void setRequests(ServerTaskRequestsCapability requests) {
+            this.requests = requests;
+        }
+    }
+
+    public static class ServerTaskRequestsCapability {
+        private ServerTaskToolsCapability tools;
+
+        public ServerTaskToolsCapability getTools() {
+            return tools;
+        }
+
+        public void setTools(ServerTaskToolsCapability tools) {
+            this.tools = tools;
+        }
+    }
+
+    public static class ServerTaskToolsCapability {
+        private Object call;
+
+        public Object getCall() {
+            return call;
+        }
+
+        public void setCall(Object call) {
+            this.call = call;
+        }
+    }
+}
+
+// File: Icon.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Icon definition
+ */
+public class Icon {
+    private String src;
+    private String mimeType;
+    private List<String> sizes;
+    private String theme;
+
+    public String getSrc() {
+        return src;
+    }
+
+    public void setSrc(String src) {
+        this.src = src;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public List<String> getSizes() {
+        return sizes;
+    }
+
+    public void setSizes(List<String> sizes) {
+        this.sizes = sizes;
+    }
+
+    public String getTheme() {
+        return theme;
+    }
+
+    public void setTheme(String theme) {
+        this.theme = theme;
+    }
+}
+
+// File: Icons.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Icons interface
+ */
+public interface Icons {
+    List<Icon> getIcons();
+    void setIcons(List<Icon> icons);
+}
+
+// File: BaseMetadata.java
+package com.example.jsonrpc;
+
+/**
+ * Base metadata interface
+ */
+public interface BaseMetadata {
+    String getName();
+    void setName(String name);
+    
+    String getTitle();
+    void setTitle(String title);
+}
+
+// File: Implementation.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Implementation information
+ */
+public class Implementation implements BaseMetadata, Icons {
+    private String name;
+    private String title;
+    private String version;
+    private String description;
+    private String websiteUrl;
+    private List<Icon> icons;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getWebsiteUrl() {
+        return websiteUrl;
+    }
+
+    public void setWebsiteUrl(String websiteUrl) {
+        this.websiteUrl = websiteUrl;
+    }
+
+    @Override
+    public List<Icon> getIcons() {
+        return icons;
+    }
+
+    @Override
+    public void setIcons(List<Icon> icons) {
+        this.icons = icons;
+    }
+}
+
+// File: InitializeRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Initialize request parameters
+ */
+public class InitializeRequestParams extends RequestParams {
+    private String protocolVersion;
+    private ClientCapabilities capabilities;
+    private Implementation clientInfo;
+
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public ClientCapabilities getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(ClientCapabilities capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public Implementation getClientInfo() {
+        return clientInfo;
+    }
+
+    public void setClientInfo(Implementation clientInfo) {
+        this.clientInfo = clientInfo;
+    }
+}
+
+// File: InitializeRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Initialize request
+ */
+public class InitializeRequest extends JSONRPCRequest {
+    private InitializeRequestParams params;
+
+    public InitializeRequest() {
+        setMethod("initialize");
+    }
+
+    public InitializeRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(InitializeRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: InitializeResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Initialize result
+ */
+public class InitializeResult implements Result {
+    private String protocolVersion;
+    private ServerCapabilities capabilities;
+    private Implementation serverInfo;
+    private String instructions;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public String getProtocolVersion() {
+        return protocolVersion;
+    }
+
+    public void setProtocolVersion(String protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public ServerCapabilities getCapabilities() {
+        return capabilities;
+    }
+
+    public void setCapabilities(ServerCapabilities capabilities) {
+        this.capabilities = capabilities;
+    }
+
+    public Implementation getServerInfo() {
+        return serverInfo;
+    }
+
+    public void setServerInfo(Implementation serverInfo) {
+        this.serverInfo = serverInfo;
+    }
+
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: InitializedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Initialized notification
+ */
+public class InitializedNotification extends JSONRPCNotification {
+    private NotificationParams params;
+
+    public InitializedNotification() {
+        setMethod("notifications/initialized");
+    }
+
+    public NotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(NotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: PingRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Ping request
+ */
+public class PingRequest extends JSONRPCRequest {
+    private RequestParams params;
+
+    public PingRequest() {
+        setMethod("ping");
+    }
+
+    public RequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(RequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: ProgressNotificationParams.java
+package com.example.jsonrpc;
+
+/**
+ * Progress notification parameters
+ */
+public class ProgressNotificationParams extends NotificationParams {
+    private ProgressToken progressToken;
+    private double progress;
+    private Double total;
+    private String message;
+
+    public ProgressToken getProgressToken() {
+        return progressToken;
+    }
+
+    public void setProgressToken(ProgressToken progressToken) {
+        this.progressToken = progressToken;
+    }
+
+    public double getProgress() {
+        return progress;
+    }
+
+    public void setProgress(double progress) {
+        this.progress = progress;
+    }
+
+    public Double getTotal() {
+        return total;
+    }
+
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+
+// File: ProgressNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Progress notification
+ */
+public class ProgressNotification extends JSONRPCNotification {
+    private ProgressNotificationParams params;
+
+    public ProgressNotification() {
+        setMethod("notifications/progress");
+    }
+
+    public ProgressNotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(ProgressNotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: PaginatedRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Paginated request parameters
+ */
+public class PaginatedRequestParams extends RequestParams {
+    private Cursor cursor;
+
+    public Cursor getCursor() {
+        return cursor;
+    }
+
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
+    }
+}
+
+// File: PaginatedRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Paginated request
+ */
+public class PaginatedRequest extends JSONRPCRequest {
+    private PaginatedRequestParams params;
+
+    public PaginatedRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(PaginatedRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: PaginatedResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Paginated result
+ */
+public class PaginatedResult implements Result {
+    private Cursor nextCursor;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public Cursor getNextCursor() {
+        return nextCursor;
+    }
+
+    public void setNextCursor(Cursor nextCursor) {
+        this.nextCursor = nextCursor;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: Annotations.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Annotations for content blocks and resources
+ */
+public class Annotations {
+    private List<Role> audience;
+    private Double priority;
+    private String lastModified;
+
+    public List<Role> getAudience() {
+        return audience;
+    }
+
+    public void setAudience(List<Role> audience) {
+        this.audience = audience;
+    }
+
+    public Double getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Double priority) {
+        this.priority = priority;
+    }
+
+    public String getLastModified() {
+        return lastModified;
+    }
+
+    public void setLastModified(String lastModified) {
+        this.lastModified = lastModified;
+    }
+}
+
+// File: Resource.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Resource definition
+ */
+public class Resource implements BaseMetadata, Icons {
+    private String name;
+    private String title;
+    private String uri;
+    private String description;
+    private String mimeType;
+    private Annotations annotations;
+    private Integer size;
+    private Map<String, Object> _meta;
+    private List<Icon> icons;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public List<Icon> getIcons() {
+        return icons;
+    }
+
+    @Override
+    public void setIcons(List<Icon> icons) {
+        this.icons = icons;
+    }
+}
+
+// File: ResourceTemplate.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Resource template definition
+ */
+public class ResourceTemplate implements BaseMetadata, Icons {
+    private String name;
+    private String title;
+    private String uriTemplate;
+    private String description;
+    private String mimeType;
+    private Annotations annotations;
+    private Map<String, Object> _meta;
+    private List<Icon> icons;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUriTemplate() {
+        return uriTemplate;
+    }
+
+    public void setUriTemplate(String uriTemplate) {
+        this.uriTemplate = uriTemplate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public List<Icon> getIcons() {
+        return icons;
+    }
+
+    @Override
+    public void setIcons(List<Icon> icons) {
+        this.icons = icons;
+    }
+}
+
+// File: ResourceContents.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Base resource contents
+ */
+public abstract class ResourceContents {
+    private String uri;
+    private String mimeType;
+    private Map<String, Object> _meta;
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: TextResourceContents.java
+package com.example.jsonrpc;
+
+/**
+ * Text resource contents
+ */
+public class TextResourceContents extends ResourceContents {
+    private String text;
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+}
+
+// File: BlobResourceContents.java
+package com.example.jsonrpc;
+
+/**
+ * Blob resource contents (base64 encoded)
+ */
+public class BlobResourceContents extends ResourceContents {
+    private String blob;
+
+    public String getBlob() {
+        return blob;
+    }
+
+    public void setBlob(String blob) {
+        this.blob = blob;
+    }
+}
+
+// File: ListResourcesRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List resources request
+ */
+public class ListResourcesRequest extends PaginatedRequest {
+    public ListResourcesRequest() {
+        setMethod("resources/list");
+    }
+}
+
+// File: ListResourcesResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * List resources result
+ */
+public class ListResourcesResult extends PaginatedResult {
+    private List<Resource> resources;
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
+    }
+}
+
+// File: ListResourceTemplatesRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List resource templates request
+ */
+public class ListResourceTemplatesRequest extends PaginatedRequest {
+    public ListResourceTemplatesRequest() {
+        setMethod("resources/templates/list");
+    }
+}
+
+// File: ListResourceTemplatesResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * List resource templates result
+ */
+public class ListResourceTemplatesResult extends PaginatedResult {
+    private List<ResourceTemplate> resourceTemplates;
+
+    public List<ResourceTemplate> getResourceTemplates() {
+        return resourceTemplates;
+    }
+
+    public void setResourceTemplates(List<ResourceTemplate> resourceTemplates) {
+        this.resourceTemplates = resourceTemplates;
+    }
+}
+
+// File: ResourceRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Resource request parameters
+ */
+public class ResourceRequestParams extends RequestParams {
+    private String uri;
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+}
+
+// File: ReadResourceRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Read resource request parameters
+ */
+public class ReadResourceRequestParams extends ResourceRequestParams {
+}
+
+// File: ReadResourceRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Read resource request
+ */
+public class ReadResourceRequest extends JSONRPCRequest {
+    private ReadResourceRequestParams params;
+
+    public ReadResourceRequest() {
+        setMethod("resources/read");
+    }
+
+    public ReadResourceRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(ReadResourceRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: ReadResourceResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Read resource result
+ */
+public class ReadResourceResult implements Result {
+    private List<ResourceContents> contents;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public List<ResourceContents> getContents() {
+        return contents;
+    }
+
+    public void setContents(List<ResourceContents> contents) {
+        this.contents = contents;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: ResourceListChangedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Resource list changed notification
+ */
+public class ResourceListChangedNotification extends JSONRPCNotification {
+    private NotificationParams params;
+
+    public ResourceListChangedNotification() {
+        setMethod("notifications/resources/list_changed");
+    }
+
+    public NotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(NotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: SubscribeRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Subscribe request parameters
+ */
+public class SubscribeRequestParams extends ResourceRequestParams {
+}
+
+// File: SubscribeRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Subscribe request
+ */
+public class SubscribeRequest extends JSONRPCRequest {
+    private SubscribeRequestParams params;
+
+    public SubscribeRequest() {
+        setMethod("resources/subscribe");
+    }
+
+    public SubscribeRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(SubscribeRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: UnsubscribeRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Unsubscribe request parameters
+ */
+public class UnsubscribeRequestParams extends ResourceRequestParams {
+}
+
+// File: UnsubscribeRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Unsubscribe request
+ */
+public class UnsubscribeRequest extends JSONRPCRequest {
+    private UnsubscribeRequestParams params;
+
+    public UnsubscribeRequest() {
+        setMethod("resources/unsubscribe");
+    }
+
+    public UnsubscribeRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(UnsubscribeRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: ResourceUpdatedNotificationParams.java
+package com.example.jsonrpc;
+
+/**
+ * Resource updated notification parameters
+ */
+public class ResourceUpdatedNotificationParams extends NotificationParams {
+    private String uri;
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+}
+
+// File: ResourceUpdatedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Resource updated notification
+ */
+public class ResourceUpdatedNotification extends JSONRPCNotification {
+    private ResourceUpdatedNotificationParams params;
+
+    public ResourceUpdatedNotification() {
+        setMethod("notifications/resources/updated");
+    }
+
+    public ResourceUpdatedNotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(ResourceUpdatedNotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: PromptArgument.java
+package com.example.jsonrpc;
+
+/**
+ * Prompt argument definition
+ */
+public class PromptArgument implements BaseMetadata {
+    private String name;
+    private String title;
+    private String description;
+    private Boolean required;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getRequired() {
+        return required;
+    }
+
+    public void setRequired(Boolean required) {
+        this.required = required;
+    }
+}
+
+// File: Prompt.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Prompt definition
+ */
+public class Prompt implements BaseMetadata, Icons {
+    private String name;
+    private String title;
+    private String description;
+    private List<PromptArgument> arguments;
+    private Map<String, Object> _meta;
+    private List<Icon> icons;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<PromptArgument> getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(List<PromptArgument> arguments) {
+        this.arguments = arguments;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public List<Icon> getIcons() {
+        return icons;
+    }
+
+    @Override
+    public void setIcons(List<Icon> icons) {
+        this.icons = icons;
+    }
+}
+
+// File: ListPromptsRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List prompts request
+ */
+public class ListPromptsRequest extends PaginatedRequest {
+    public ListPromptsRequest() {
+        setMethod("prompts/list");
+    }
+}
+
+// File: ListPromptsResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * List prompts result
+ */
+public class ListPromptsResult extends PaginatedResult {
+    private List<Prompt> prompts;
+
+    public List<Prompt> getPrompts() {
+        return prompts;
+    }
+
+    public void setPrompts(List<Prompt> prompts) {
+        this.prompts = prompts;
+    }
+}
+
+// File: GetPromptRequestParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Get prompt request parameters
+ */
+public class GetPromptRequestParams extends RequestParams {
+    private String name;
+    private Map<String, String> arguments;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, String> getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Map<String, String> arguments) {
+        this.arguments = arguments;
+    }
+}
+
+// File: GetPromptRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Get prompt request
+ */
+public class GetPromptRequest extends JSONRPCRequest {
+    private GetPromptRequestParams params;
+
+    public GetPromptRequest() {
+        setMethod("prompts/get");
+    }
+
+    public GetPromptRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(GetPromptRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: Role.java
+package com.example.jsonrpc;
+
+/**
+ * Role enum for messages
+ */
+public enum Role {
+    USER("user"),
+    ASSISTANT("assistant");
+
+    private final String value;
+
+    Role(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+}
+
+// File: ContentBlock.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for content blocks
+ */
+public interface ContentBlock {
+    String getType();
+}
+
+// File: PromptMessage.java
+package com.example.jsonrpc;
+
+/**
+ * Prompt message
+ */
+public class PromptMessage {
+    private Role role;
+    private ContentBlock content;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public ContentBlock getContent() {
+        return content;
+    }
+
+    public void setContent(ContentBlock content) {
+        this.content = content;
+    }
+}
+
+// File: GetPromptResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Get prompt result
+ */
+public class GetPromptResult implements Result {
+    private String description;
+    private List<PromptMessage> messages;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<PromptMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<PromptMessage> messages) {
+        this.messages = messages;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: TextContent.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Text content block
+ */
+public class TextContent implements ContentBlock {
+    private String type = "text";
+    private String text;
+    private Annotations annotations;
+    private Map<String, Object> _meta;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: ImageContent.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Image content block
+ */
+public class ImageContent implements ContentBlock {
+    private String type = "image";
+    private String data;
+    private String mimeType;
+    private Annotations annotations;
+    private Map<String, Object> _meta;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: AudioContent.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Audio content block
+ */
+public class AudioContent implements ContentBlock {
+    private String type = "audio";
+    private String data;
+    private String mimeType;
+    private Annotations annotations;
+    private Map<String, Object> _meta;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: ResourceLink.java
+package com.example.jsonrpc;
+
+/**
+ * Resource link content block
+ */
+public class ResourceLink extends Resource implements ContentBlock {
+    private String type = "resource_link";
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+}
+
+// File: EmbeddedResource.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Embedded resource content block
+ */
+public class EmbeddedResource implements ContentBlock {
+    private String type = "resource";
+    private ResourceContents resource;
+    private Annotations annotations;
+    private Map<String, Object> _meta;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public ResourceContents getResource() {
+        return resource;
+    }
+
+    public void setResource(ResourceContents resource) {
+        this.resource = resource;
+    }
+
+    public Annotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Annotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: PromptListChangedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Prompt list changed notification
+ */
+public class PromptListChangedNotification extends JSONRPCNotification {
+    private NotificationParams params;
+
+    public PromptListChangedNotification() {
+        setMethod("notifications/prompts/list_changed");
+    }
+
+    public NotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(NotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: ToolAnnotations.java
+package com.example.jsonrpc;
+
+/**
+ * Tool annotations
+ */
+public class ToolAnnotations {
+    private String title;
+    private Boolean readOnlyHint;
+    private Boolean destructiveHint;
+    private Boolean idempotentHint;
+    private Boolean openWorldHint;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public Boolean getReadOnlyHint() {
+        return readOnlyHint;
+    }
+
+    public void setReadOnlyHint(Boolean readOnlyHint) {
+        this.readOnlyHint = readOnlyHint;
+    }
+
+    public Boolean getDestructiveHint() {
+        return destructiveHint;
+    }
+
+    public void setDestructiveHint(Boolean destructiveHint) {
+        this.destructiveHint = destructiveHint;
+    }
+
+    public Boolean getIdempotentHint() {
+        return idempotentHint;
+    }
+
+    public void setIdempotentHint(Boolean idempotentHint) {
+        this.idempotentHint = idempotentHint;
+    }
+
+    public Boolean getOpenWorldHint() {
+        return openWorldHint;
+    }
+
+    public void setOpenWorldHint(Boolean openWorldHint) {
+        this.openWorldHint = openWorldHint;
+    }
+}
+
+// File: ToolExecution.java
+package com.example.jsonrpc;
+
+/**
+ * Tool execution configuration
+ */
+public class ToolExecution {
+    private String taskSupport;
+
+    public String getTaskSupport() {
+        return taskSupport;
+    }
+
+    public void setTaskSupport(String taskSupport) {
+        this.taskSupport = taskSupport;
+    }
+}
+
+// File: Tool.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Tool definition
+ */
+public class Tool implements BaseMetadata, Icons {
+    private String name;
+    private String title;
+    private String description;
+    private ToolInputSchema inputSchema;
+    private ToolExecution execution;
+    private ToolOutputSchema outputSchema;
+    private ToolAnnotations annotations;
+    private Map<String, Object> _meta;
+    private List<Icon> icons;
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ToolInputSchema getInputSchema() {
+        return inputSchema;
+    }
+
+    public void setInputSchema(ToolInputSchema inputSchema) {
+        this.inputSchema = inputSchema;
+    }
+
+    public ToolExecution getExecution() {
+        return execution;
+    }
+
+    public void setExecution(ToolExecution execution) {
+        this.execution = execution;
+    }
+
+    public ToolOutputSchema getOutputSchema() {
+        return outputSchema;
+    }
+
+    public void setOutputSchema(ToolOutputSchema outputSchema) {
+        this.outputSchema = outputSchema;
+    }
+
+    public ToolAnnotations getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(ToolAnnotations annotations) {
+        this.annotations = annotations;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public List<Icon> getIcons() {
+        return icons;
+    }
+
+    @Override
+    public void setIcons(List<Icon> icons) {
+        this.icons = icons;
+    }
+
+    public static class ToolInputSchema {
+        private String $schema;
+        private String type = "object";
+        private Map<String, Object> properties;
+        private List<String> required;
+
+        public String get$schema() {
+            return $schema;
+        }
+
+        public void set$schema(String $schema) {
+            this.$schema = $schema;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public Map<String, Object> getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Map<String, Object> properties) {
+            this.properties = properties;
+        }
+
+        public List<String> getRequired() {
+            return required;
+        }
+
+        public void setRequired(List<String> required) {
+            this.required = required;
+        }
+    }
+
+    public static class ToolOutputSchema {
+        private String $schema;
+        private String type = "object";
+        private Map<String, Object> properties;
+        private List<String> required;
+
+        public String get$schema() {
+            return $schema;
+        }
+
+        public void set$schema(String $schema) {
+            this.$schema = $schema;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public Map<String, Object> getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Map<String, Object> properties) {
+            this.properties = properties;
+        }
+
+        public List<String> getRequired() {
+            return required;
+        }
+
+        public void setRequired(List<String> required) {
+            this.required = required;
+        }
+    }
+}
+
+// File: ListToolsRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List tools request
+ */
+public class ListToolsRequest extends PaginatedRequest {
+    public ListToolsRequest() {
+        setMethod("tools/list");
+    }
+}
+
+// File: ListToolsResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * List tools result
+ */
+public class ListToolsResult extends PaginatedResult {
+    private List<Tool> tools;
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public void setTools(List<Tool> tools) {
+        this.tools = tools;
+    }
+}
+
+// File: CallToolRequestParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Call tool request parameters
+ */
+public class CallToolRequestParams extends TaskAugmentedRequestParams {
+    private String name;
+    private Map<String, Object> arguments;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, Object> getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Map<String, Object> arguments) {
+        this.arguments = arguments;
+    }
+}
+
+// File: CallToolRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Call tool request
+ */
+public class CallToolRequest extends JSONRPCRequest {
+    private CallToolRequestParams params;
+
+    public CallToolRequest() {
+        setMethod("tools/call");
+    }
+
+    public CallToolRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(CallToolRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: CallToolResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Call tool result
+ */
+public class CallToolResult implements Result {
+    private List<ContentBlock> content;
+    private Map<String, Object> structuredContent;
+    private Boolean isError;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public List<ContentBlock> getContent() {
+        return content;
+    }
+
+    public void setContent(List<ContentBlock> content) {
+        this.content = content;
+    }
+
+    public Map<String, Object> getStructuredContent() {
+        return structuredContent;
+    }
+
+    public void setStructuredContent(Map<String, Object> structuredContent) {
+        this.structuredContent = structuredContent;
+    }
+
+    public Boolean getIsError() {
+        return isError;
+    }
+
+    public void setIsError(Boolean isError) {
+        this.isError = isError;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: ToolListChangedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Tool list changed notification
+ */
+public class ToolListChangedNotification extends JSONRPCNotification {
+    private NotificationParams params;
+
+    public ToolListChangedNotification() {
+        setMethod("notifications/tools/list_changed");
+    }
+
+    public NotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(NotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: TaskStatus.java
+package com.example.jsonrpc;
+
+/**
+ * Task status enum
+ */
+public enum TaskStatus {
+    WORKING("working"),
+    INPUT_REQUIRED("input_required"),
+    COMPLETED("completed"),
+    FAILED("failed"),
+    CANCELLED("cancelled");
+
+    private final String value;
+
+    TaskStatus(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+}
+
+// File: RelatedTaskMetadata.java
+package com.example.jsonrpc;
+
+/**
+ * Related task metadata
+ */
+public class RelatedTaskMetadata {
+    private String taskId;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+}
+
+// File: Task.java
+package com.example.jsonrpc;
+
+/**
+ * Task definition
+ */
+public class Task {
+    private String taskId;
+    private TaskStatus status;
+    private String statusMessage;
+    private String createdAt;
+    private String lastUpdatedAt;
+    private Integer ttl;
+    private Integer pollInterval;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(String lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(Integer ttl) {
+        this.ttl = ttl;
+    }
+
+    public Integer getPollInterval() {
+        return pollInterval;
+    }
+
+    public void setPollInterval(Integer pollInterval) {
+        this.pollInterval = pollInterval;
+    }
+}
+
+// File: CreateTaskResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Create task result
+ */
+public class CreateTaskResult implements Result {
+    private Task task;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: GetTaskRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Get task request
+ */
+public class GetTaskRequest extends JSONRPCRequest {
+    private GetTaskRequestParams params;
+
+    public GetTaskRequest() {
+        setMethod("tasks/get");
+    }
+
+    public GetTaskRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(GetTaskRequestParams params) {
+        this.params = params;
+    }
+
+    public static class GetTaskRequestParams extends RequestParams {
+        private String taskId;
+
+        public String getTaskId() {
+            return taskId;
+        }
+
+        public void setTaskId(String taskId) {
+            this.taskId = taskId;
+        }
+    }
+}
+
+// File: GetTaskResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Get task result
+ */
+public class GetTaskResult extends Task implements Result {
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: GetTaskPayloadRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Get task payload request
+ */
+public class GetTaskPayloadRequest extends JSONRPCRequest {
+    private GetTaskPayloadRequestParams params;
+
+    public GetTaskPayloadRequest() {
+        setMethod("tasks/result");
+    }
+
+    public GetTaskPayloadRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(GetTaskPayloadRequestParams params) {
+        this.params = params;
+    }
+
+    public static class GetTaskPayloadRequestParams extends RequestParams {
+        private String taskId;
+
+        public String getTaskId() {
+            return taskId;
+        }
+
+        public void setTaskId(String taskId) {
+            this.taskId = taskId;
+        }
+    }
+}
+
+// File: GetTaskPayloadResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Get task payload result
+ */
+public class GetTaskPayloadResult implements Result {
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: CancelTaskRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Cancel task request
+ */
+public class CancelTaskRequest extends JSONRPCRequest {
+    private CancelTaskRequestParams params;
+
+    public CancelTaskRequest() {
+        setMethod("tasks/cancel");
+    }
+
+    public CancelTaskRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(CancelTaskRequestParams params) {
+        this.params = params;
+    }
+
+    public static class CancelTaskRequestParams extends RequestParams {
+        private String taskId;
+
+        public String getTaskId() {
+            return taskId;
+        }
+
+        public void setTaskId(String taskId) {
+            this.taskId = taskId;
+        }
+    }
+}
+
+// File: CancelTaskResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Cancel task result
+ */
+public class CancelTaskResult extends Task implements Result {
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: ListTasksRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List tasks request
+ */
+public class ListTasksRequest extends PaginatedRequest {
+    public ListTasksRequest() {
+        setMethod("tasks/list");
+    }
+}
+
+// File: ListTasksResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * List tasks result
+ */
+public class ListTasksResult extends PaginatedResult {
+    private List<Task> tasks;
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+}
+
+// File: TaskStatusNotificationParams.java
+package com.example.jsonrpc;
+
+/**
+ * Task status notification parameters
+ */
+public class TaskStatusNotificationParams extends NotificationParams {
+    private String taskId;
+    private TaskStatus status;
+    private String statusMessage;
+    private String createdAt;
+    private String lastUpdatedAt;
+    private Integer ttl;
+    private Integer pollInterval;
+
+    public String getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(String taskId) {
+        this.taskId = taskId;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String statusMessage) {
+        this.statusMessage = statusMessage;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    public void setLastUpdatedAt(String lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    public Integer getTtl() {
+        return ttl;
+    }
+
+    public void setTtl(Integer ttl) {
+        this.ttl = ttl;
+    }
+
+    public Integer getPollInterval() {
+        return pollInterval;
+    }
+
+    public void setPollInterval(Integer pollInterval) {
+        this.pollInterval = pollInterval;
+    }
+}
+
+// File: TaskStatusNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Task status notification
+ */
+public class TaskStatusNotification extends JSONRPCNotification {
+    private TaskStatusNotificationParams params;
+
+    public TaskStatusNotification() {
+        setMethod("notifications/tasks/status");
+    }
+
+    public TaskStatusNotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(TaskStatusNotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: LoggingLevel.java
+package com.example.jsonrpc;
+
+/**
+ * Logging level enum
+ */
+public enum LoggingLevel {
+    DEBUG("debug"),
+    INFO("info"),
+    NOTICE("notice"),
+    WARNING("warning"),
+    ERROR("error"),
+    CRITICAL("critical"),
+    ALERT("alert"),
+    EMERGENCY("emergency");
+
+    private final String value;
+
+    LoggingLevel(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return value;
+    }
+}
+
+// File: SetLevelRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Set level request parameters
+ */
+public class SetLevelRequestParams extends RequestParams {
+    private LoggingLevel level;
+
+    public LoggingLevel getLevel() {
+        return level;
+    }
+
+    public void setLevel(LoggingLevel level) {
+        this.level = level;
+    }
+}
+
+// File: SetLevelRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Set level request
+ */
+public class SetLevelRequest extends JSONRPCRequest {
+    private SetLevelRequestParams params;
+
+    public SetLevelRequest() {
+        setMethod("logging/setLevel");
+    }
+
+    public SetLevelRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(SetLevelRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: LoggingMessageNotificationParams.java
+package com.example.jsonrpc;
+
+/**
+ * Logging message notification parameters
+ */
+public class LoggingMessageNotificationParams extends NotificationParams {
+    private LoggingLevel level;
+    private String logger;
+    private Object data;
+
+    public LoggingLevel getLevel() {
+        return level;
+    }
+
+    public void setLevel(LoggingLevel level) {
+        this.level = level;
+    }
+
+    public String getLogger() {
+        return logger;
+    }
+
+    public void setLogger(String logger) {
+        this.logger = logger;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
+        this.data = data;
+    }
+}
+
+// File: LoggingMessageNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Logging message notification
+ */
+public class LoggingMessageNotification extends JSONRPCNotification {
+    private LoggingMessageNotificationParams params;
+
+    public LoggingMessageNotification() {
+        setMethod("notifications/message");
+    }
+
+    public LoggingMessageNotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(LoggingMessageNotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: ModelHint.java
+package com.example.jsonrpc;
+
+/**
+ * Model hint
+ */
+public class ModelHint {
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+}
+
+// File: ModelPreferences.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Model preferences
+ */
+public class ModelPreferences {
+    private List<ModelHint> hints;
+    private Double costPriority;
+    private Double speedPriority;
+    private Double intelligencePriority;
+
+    public List<ModelHint> getHints() {
+        return hints;
+    }
+
+    public void setHints(List<ModelHint> hints) {
+        this.hints = hints;
+    }
+
+    public Double getCostPriority() {
+        return costPriority;
+    }
+
+    public void setCostPriority(Double costPriority) {
+        this.costPriority = costPriority;
+    }
+
+    public Double getSpeedPriority() {
+        return speedPriority;
+    }
+
+    public void setSpeedPriority(Double speedPriority) {
+        this.speedPriority = speedPriority;
+    }
+
+    public Double getIntelligencePriority() {
+        return intelligencePriority;
+    }
+
+    public void setIntelligencePriority(Double intelligencePriority) {
+        this.intelligencePriority = intelligencePriority;
+    }
+}
+
+// File: ToolUseContent.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Tool use content block
+ */
+public class ToolUseContent {
+    private String type = "tool_use";
+    private String id;
+    private String name;
+    private Map<String, Object> input;
+    private Map<String, Object> _meta;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, Object> getInput() {
+        return input;
+    }
+
+    public void setInput(Map<String, Object> input) {
+        this.input = input;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: ToolResultContent.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Tool result content block
+ */
+public class ToolResultContent {
+    private String type = "tool_result";
+    private String toolUseId;
+    private List<ContentBlock> content;
+    private Map<String, Object> structuredContent;
+    private Boolean isError;
+    private Map<String, Object> _meta;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getToolUseId() {
+        return toolUseId;
+    }
+
+    public void setToolUseId(String toolUseId) {
+        this.toolUseId = toolUseId;
+    }
+
+    public List<ContentBlock> getContent() {
+        return content;
+    }
+
+    public void setContent(List<ContentBlock> content) {
+        this.content = content;
+    }
+
+    public Map<String, Object> getStructuredContent() {
+        return structuredContent;
+    }
+
+    public void setStructuredContent(Map<String, Object> structuredContent) {
+        this.structuredContent = structuredContent;
+    }
+
+    public Boolean getIsError() {
+        return isError;
+    }
+
+    public void setIsError(Boolean isError) {
+        this.isError = isError;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: SamplingMessageContentBlock.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for sampling message content blocks
+ */
+public interface SamplingMessageContentBlock {
+    String getType();
+}
+
+// File: SamplingMessage.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Sampling message
+ */
+public class SamplingMessage {
+    private Role role;
+    private Object content; // Can be single SamplingMessageContentBlock or List<SamplingMessageContentBlock>
+    private Map<String, Object> _meta;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Object getContent() {
+        return content;
+    }
+
+    public void setContent(Object content) {
+        this.content = content;
+    }
+
+    public SamplingMessageContentBlock getContentAsSingle() {
+        if (content instanceof SamplingMessageContentBlock) {
+            return (SamplingMessageContentBlock) content;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<SamplingMessageContentBlock> getContentAsList() {
+        if (content instanceof List) {
+            return (List<SamplingMessageContentBlock>) content;
+        }
+        return null;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: ToolChoice.java
+package com.example.jsonrpc;
+
+/**
+ * Tool choice configuration
+ */
+public class ToolChoice {
+    private String mode;
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+}
+
+// File: CreateMessageRequestParams.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Create message request parameters
+ */
+public class CreateMessageRequestParams extends TaskAugmentedRequestParams {
+    private List<SamplingMessage> messages;
+    private ModelPreferences modelPreferences;
+    private String systemPrompt;
+    private String includeContext;
+    private Double temperature;
+    private int maxTokens;
+    private List<String> stopSequences;
+    private Object metadata;
+    private List<Tool> tools;
+    private ToolChoice toolChoice;
+
+    public List<SamplingMessage> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<SamplingMessage> messages) {
+        this.messages = messages;
+    }
+
+    public ModelPreferences getModelPreferences() {
+        return modelPreferences;
+    }
+
+    public void setModelPreferences(ModelPreferences modelPreferences) {
+        this.modelPreferences = modelPreferences;
+    }
+
+    public String getSystemPrompt() {
+        return systemPrompt;
+    }
+
+    public void setSystemPrompt(String systemPrompt) {
+        this.systemPrompt = systemPrompt;
+    }
+
+    public String getIncludeContext() {
+        return includeContext;
+    }
+
+    public void setIncludeContext(String includeContext) {
+        this.includeContext = includeContext;
+    }
+
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
+    }
+
+    public int getMaxTokens() {
+        return maxTokens;
+    }
+
+    public void setMaxTokens(int maxTokens) {
+        this.maxTokens = maxTokens;
+    }
+
+    public List<String> getStopSequences() {
+        return stopSequences;
+    }
+
+    public void setStopSequences(List<String> stopSequences) {
+        this.stopSequences = stopSequences;
+    }
+
+    public Object getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Object metadata) {
+        this.metadata = metadata;
+    }
+
+    public List<Tool> getTools() {
+        return tools;
+    }
+
+    public void setTools(List<Tool> tools) {
+        this.tools = tools;
+    }
+
+    public ToolChoice getToolChoice() {
+        return toolChoice;
+    }
+
+    public void setToolChoice(ToolChoice toolChoice) {
+        this.toolChoice = toolChoice;
+    }
+}
+
+// File: CreateMessageRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Create message request
+ */
+public class CreateMessageRequest extends JSONRPCRequest {
+    private CreateMessageRequestParams params;
+
+    public CreateMessageRequest() {
+        setMethod("sampling/createMessage");
+    }
+
+    public CreateMessageRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(CreateMessageRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: CreateMessageResult.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Create message result
+ */
+public class CreateMessageResult extends SamplingMessage implements Result {
+    private String model;
+    private String stopReason;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getStopReason() {
+        return stopReason;
+    }
+
+    public void setStopReason(String stopReason) {
+        this.stopReason = stopReason;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: PromptReference.java
+package com.example.jsonrpc;
+
+/**
+ * Prompt reference
+ */
+public class PromptReference implements BaseMetadata {
+    private String type = "ref/prompt";
+    private String name;
+    private String title;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+}
+
+// File: ResourceTemplateReference.java
+package com.example.jsonrpc;
+
+/**
+ * Resource template reference
+ */
+public class ResourceTemplateReference {
+    private String type = "ref/resource";
+    private String uri;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+}
+
+// File: CompleteRequestParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Complete request parameters
+ */
+public class CompleteRequestParams extends RequestParams {
+    private Object ref; // Can be PromptReference or ResourceTemplateReference
+    private CompleteArgument argument;
+    private CompleteContext context;
+
+    public Object getRef() {
+        return ref;
+    }
+
+    public void setRef(Object ref) {
+        this.ref = ref;
+    }
+
+    public PromptReference getRefAsPrompt() {
+        if (ref instanceof PromptReference) {
+            return (PromptReference) ref;
+        }
+        return null;
+    }
+
+    public ResourceTemplateReference getRefAsResourceTemplate() {
+        if (ref instanceof ResourceTemplateReference) {
+            return (ResourceTemplateReference) ref;
+        }
+        return null;
+    }
+
+    public CompleteArgument getArgument() {
+        return argument;
+    }
+
+    public void setArgument(CompleteArgument argument) {
+        this.argument = argument;
+    }
+
+    public CompleteContext getContext() {
+        return context;
+    }
+
+    public void setContext(CompleteContext context) {
+        this.context = context;
+    }
+
+    public static class CompleteArgument {
+        private String name;
+        private String value;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static class CompleteContext {
+        private Map<String, String> arguments;
+
+        public Map<String, String> getArguments() {
+            return arguments;
+        }
+
+        public void setArguments(Map<String, String> arguments) {
+            this.arguments = arguments;
+        }
+    }
+}
+
+// File: CompleteRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Complete request
+ */
+public class CompleteRequest extends JSONRPCRequest {
+    private CompleteRequestParams params;
+
+    public CompleteRequest() {
+        setMethod("completion/complete");
+    }
+
+    public CompleteRequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(CompleteRequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: CompleteResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Complete result
+ */
+public class CompleteResult implements Result {
+    private Completion completion;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public Completion getCompletion() {
+        return completion;
+    }
+
+    public void setCompletion(Completion completion) {
+        this.completion = completion;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+
+    public static class Completion {
+        private List<String> values;
+        private Integer total;
+        private Boolean hasMore;
+
+        public List<String> getValues() {
+            return values;
+        }
+
+        public void setValues(List<String> values) {
+            this.values = values;
+        }
+
+        public Integer getTotal() {
+            return total;
+        }
+
+        public void setTotal(Integer total) {
+            this.total = total;
+        }
+
+        public Boolean getHasMore() {
+            return hasMore;
+        }
+
+        public void setHasMore(Boolean hasMore) {
+            this.hasMore = hasMore;
+        }
+    }
+}
+
+// File: Root.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Root definition
+ */
+public class Root {
+    private String uri;
+    private String name;
+    private Map<String, Object> _meta;
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+}
+
+// File: ListRootsRequest.java
+package com.example.jsonrpc;
+
+/**
+ * List roots request
+ */
+public class ListRootsRequest extends JSONRPCRequest {
+    private RequestParams params;
+
+    public ListRootsRequest() {
+        setMethod("roots/list");
+    }
+
+    public RequestParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(RequestParams params) {
+        this.params = params;
+    }
+}
+
+// File: ListRootsResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * List roots result
+ */
+public class ListRootsResult implements Result {
+    private List<Root> roots;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public List<Root> getRoots() {
+        return roots;
+    }
+
+    public void setRoots(List<Root> roots) {
+        this.roots = roots;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: RootsListChangedNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Roots list changed notification
+ */
+public class RootsListChangedNotification extends JSONRPCNotification {
+    private NotificationParams params;
+
+    public RootsListChangedNotification() {
+        setMethod("notifications/roots/list_changed");
+    }
+
+    public NotificationParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(NotificationParams params) {
+        this.params = params;
+    }
+}
+
+// File: PrimitiveSchemaDefinition.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for primitive schema definitions
+ */
+public interface PrimitiveSchemaDefinition {
+    String getType();
+}
+
+// File: StringSchema.java
+package com.example.jsonrpc;
+
+/**
+ * String schema definition
+ */
+public class StringSchema implements PrimitiveSchemaDefinition {
+    private String type = "string";
+    private String title;
+    private String description;
+    private Integer minLength;
+    private Integer maxLength;
+    private String format;
+    private String defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getMinLength() {
+        return minLength;
+    }
+
+    public void setMinLength(Integer minLength) {
+        this.minLength = minLength;
+    }
+
+    public Integer getMaxLength() {
+        return maxLength;
+    }
+
+    public void setMaxLength(Integer maxLength) {
+        this.maxLength = maxLength;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+}
+
+// File: NumberSchema.java
+package com.example.jsonrpc;
+
+/**
+ * Number schema definition
+ */
+public class NumberSchema implements PrimitiveSchemaDefinition {
+    private String type; // "number" or "integer"
+    private String title;
+    private String description;
+    private Number minimum;
+    private Number maximum;
+    private Number defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Number getMinimum() {
+        return minimum;
+    }
+
+    public void setMinimum(Number minimum) {
+        this.minimum = minimum;
+    }
+
+    public Number getMaximum() {
+        return maximum;
+    }
+
+    public void setMaximum(Number maximum) {
+        this.maximum = maximum;
+    }
+
+    public Number getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Number defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+}
+
+// File: BooleanSchema.java
+package com.example.jsonrpc;
+
+/**
+ * Boolean schema definition
+ */
+public class BooleanSchema implements PrimitiveSchemaDefinition {
+    private String type = "boolean";
+    private String title;
+    private String description;
+    private Boolean defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Boolean getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(Boolean defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+}
+
+// File: SingleSelectEnumSchema.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for single select enum schemas
+ */
+public interface SingleSelectEnumSchema extends PrimitiveSchemaDefinition {
+}
+
+// File: UntitledSingleSelectEnumSchema.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Untitled single select enum schema
+ */
+public class UntitledSingleSelectEnumSchema implements SingleSelectEnumSchema {
+    private String type = "string";
+    private String title;
+    private String description;
+    private List<String> enumValues;
+    private String defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
+    public void setEnumValues(List<String> enumValues) {
+        this.enumValues = enumValues;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+}
+
+// File: TitledSingleSelectEnumSchema.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Titled single select enum schema
+ */
+public class TitledSingleSelectEnumSchema implements SingleSelectEnumSchema {
+    private String type = "string";
+    private String title;
+    private String description;
+    private List<EnumOption> oneOf;
+    private String defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<EnumOption> getOneOf() {
+        return oneOf;
+    }
+
+    public void setOneOf(List<EnumOption> oneOf) {
+        this.oneOf = oneOf;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public static class EnumOption {
+        private String constValue;
+        private String title;
+
+        public String getConstValue() {
+            return constValue;
+        }
+
+        public void setConstValue(String constValue) {
+            this.constValue = constValue;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+    }
+}
+
+// File: MultiSelectEnumSchema.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for multi select enum schemas
+ */
+public interface MultiSelectEnumSchema extends PrimitiveSchemaDefinition {
+}
+
+// File: UntitledMultiSelectEnumSchema.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Untitled multi select enum schema
+ */
+public class UntitledMultiSelectEnumSchema implements MultiSelectEnumSchema {
+    private String type = "array";
+    private String title;
+    private String description;
+    private Integer minItems;
+    private Integer maxItems;
+    private ArrayItems items;
+    private List<String> defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getMinItems() {
+        return minItems;
+    }
+
+    public void setMinItems(Integer minItems) {
+        this.minItems = minItems;
+    }
+
+    public Integer getMaxItems() {
+        return maxItems;
+    }
+
+    public void setMaxItems(Integer maxItems) {
+        this.maxItems = maxItems;
+    }
+
+    public ArrayItems getItems() {
+        return items;
+    }
+
+    public void setItems(ArrayItems items) {
+        this.items = items;
+    }
+
+    public List<String> getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(List<String> defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public static class ArrayItems {
+        private String type = "string";
+        private List<String> enumValues;
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public List<String> getEnumValues() {
+            return enumValues;
+        }
+
+        public void setEnumValues(List<String> enumValues) {
+            this.enumValues = enumValues;
+        }
+    }
+}
+
+// File: TitledMultiSelectEnumSchema.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Titled multi select enum schema
+ */
+public class TitledMultiSelectEnumSchema implements MultiSelectEnumSchema {
+    private String type = "array";
+    private String title;
+    private String description;
+    private Integer minItems;
+    private Integer maxItems;
+    private ArrayItems items;
+    private List<String> defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getMinItems() {
+        return minItems;
+    }
+
+    public void setMinItems(Integer minItems) {
+        this.minItems = minItems;
+    }
+
+    public Integer getMaxItems() {
+        return maxItems;
+    }
+
+    public void setMaxItems(Integer maxItems) {
+        this.maxItems = maxItems;
+    }
+
+    public ArrayItems getItems() {
+        return items;
+    }
+
+    public void setItems(ArrayItems items) {
+        this.items = items;
+    }
+
+    public List<String> getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(List<String> defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    public static class ArrayItems {
+        private List<EnumOption> anyOf;
+
+        public List<EnumOption> getAnyOf() {
+            return anyOf;
+        }
+
+        public void setAnyOf(List<EnumOption> anyOf) {
+            this.anyOf = anyOf;
+        }
+    }
+
+    public static class EnumOption {
+        private String constValue;
+        private String title;
+
+        public String getConstValue() {
+            return constValue;
+        }
+
+        public void setConstValue(String constValue) {
+            this.constValue = constValue;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public void setTitle(String title) {
+            this.title = title;
+        }
+    }
+}
+
+// File: LegacyTitledEnumSchema.java
+package com.example.jsonrpc;
+
+import java.util.List;
+
+/**
+ * Legacy titled enum schema
+ */
+public class LegacyTitledEnumSchema implements PrimitiveSchemaDefinition {
+    private String type = "string";
+    private String title;
+    private String description;
+    private List<String> enumValues;
+    private List<String> enumNames;
+    private String defaultValue;
+
+    @Override
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<String> getEnumValues() {
+        return enumValues;
+    }
+
+    public void setEnumValues(List<String> enumValues) {
+        this.enumValues = enumValues;
+    }
+
+    public List<String> getEnumNames() {
+        return enumNames;
+    }
+
+    public void setEnumNames(List<String> enumNames) {
+        this.enumNames = enumNames;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
+    }
+
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+}
+
+// File: EnumSchema.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for enum schemas
+ */
+public interface EnumSchema extends PrimitiveSchemaDefinition {
+}
+
+// File: ElicitRequestFormParams.java
+package com.example.jsonrpc;
+
+import java.util.Map;
+
+/**
+ * Elicit request form parameters
+ */
+public class ElicitRequestFormParams extends TaskAugmentedRequestParams {
+    private String mode = "form";
+    private String message;
+    private ElicitRequestSchema requestedSchema;
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public ElicitRequestSchema getRequestedSchema() {
+        return requestedSchema;
+    }
+
+    public void setRequestedSchema(ElicitRequestSchema requestedSchema) {
+        this.requestedSchema = requestedSchema;
+    }
+
+    public static class ElicitRequestSchema {
+        private String $schema;
+        private String type = "object";
+        private Map<String, PrimitiveSchemaDefinition> properties;
+        private java.util.List<String> required;
+
+        public String get$schema() {
+            return $schema;
+        }
+
+        public void set$schema(String $schema) {
+            this.$schema = $schema;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        public Map<String, PrimitiveSchemaDefinition> getProperties() {
+            return properties;
+        }
+
+        public void setProperties(Map<String, PrimitiveSchemaDefinition> properties) {
+            this.properties = properties;
+        }
+
+        public java.util.List<String> getRequired() {
+            return required;
+        }
+
+        public void setRequired(java.util.List<String> required) {
+            this.required = required;
+        }
+    }
+}
+
+// File: ElicitRequestURLParams.java
+package com.example.jsonrpc;
+
+/**
+ * Elicit request URL parameters
+ */
+public class ElicitRequestURLParams extends TaskAugmentedRequestParams {
+    private String mode = "url";
+    private String message;
+    private String elicitationId;
+    private String url;
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
+        this.mode = mode;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getElicitationId() {
+        return elicitationId;
+    }
+
+    public void setElicitationId(String elicitationId) {
+        this.elicitationId = elicitationId;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+}
+
+// File: ElicitRequestParams.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for elicit request parameters
+ */
+public interface ElicitRequestParams {
+}
+
+// File: ElicitRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Elicit request
+ */
+public class ElicitRequest extends JSONRPCRequest {
+    private Object params; // Can be ElicitRequestFormParams or ElicitRequestURLParams
+
+    public ElicitRequest() {
+        setMethod("elicitation/create");
+    }
+
+    public Object getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(Object params) {
+        this.params = params;
+    }
+
+    public ElicitRequestFormParams getParamsAsForm() {
+        if (params instanceof ElicitRequestFormParams) {
+            return (ElicitRequestFormParams) params;
+        }
+        return null;
+    }
+
+    public ElicitRequestURLParams getParamsAsURL() {
+        if (params instanceof ElicitRequestURLParams) {
+            return (ElicitRequestURLParams) params;
+        }
+        return null;
+    }
+}
+
+// File: ElicitResult.java
+package com.example.jsonrpc;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Elicit result
+ */
+public class ElicitResult implements Result {
+    private String action;
+    private Map<String, Object> content;
+    private Map<String, Object> _meta;
+    private Map<String, Object> additionalProperties;
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
+    public Map<String, Object> getContent() {
+        return content;
+    }
+
+    public void setContent(Map<String, Object> content) {
+        this.content = content;
+    }
+
+    @Override
+    public Map<String, Object> get_meta() {
+        return _meta;
+    }
+
+    @Override
+    public void set_meta(Map<String, Object> _meta) {
+        this._meta = _meta;
+    }
+
+    @Override
+    public Map<String, Object> getAdditionalProperties() {
+        return additionalProperties;
+    }
+
+    @Override
+    public void setAdditionalProperties(Map<String, Object> additionalProperties) {
+        this.additionalProperties = additionalProperties;
+    }
+}
+
+// File: ElicitationCompleteNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Elicitation complete notification
+ */
+public class ElicitationCompleteNotification extends JSONRPCNotification {
+    private ElicitationCompleteParams params;
+
+    public ElicitationCompleteNotification() {
+        setMethod("notifications/elicitation/complete");
+    }
+
+    public ElicitationCompleteParams getTypedParams() {
+        return params;
+    }
+
+    public void setTypedParams(ElicitationCompleteParams params) {
+        this.params = params;
+    }
+
+    public static class ElicitationCompleteParams extends NotificationParams {
+        private String elicitationId;
+
+        public String getElicitationId() {
+            return elicitationId;
+        }
+
+        public void setElicitationId(String elicitationId) {
+            this.elicitationId = elicitationId;
+        }
+    }
+}
+
+// File: ClientRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for client requests
+ */
+public interface ClientRequest {
+}
+
+// File: ClientNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for client notifications
+ */
+public interface ClientNotification {
+}
+
+// File: ClientResult.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for client results
+ */
+public interface ClientResult extends Result {
+}
+
+// File: ServerRequest.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for server requests
+ */
+public interface ServerRequest {
+}
+
+// File: ServerNotification.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for server notifications
+ */
+public interface ServerNotification {
+}
+
+// File: ServerResult.java
+package com.example.jsonrpc;
+
+/**
+ * Marker interface for server results
+ */
+public interface ServerResult extends Result {
+}
