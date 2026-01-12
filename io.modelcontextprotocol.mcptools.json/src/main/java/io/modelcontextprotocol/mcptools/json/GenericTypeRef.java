@@ -15,6 +15,10 @@ public abstract class GenericTypeRef<T> {
 		this.type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
 	}
 
+	protected GenericTypeRef(Type type) {
+		this.type = type;
+	}
+	
 	public Type getType() {
 		return type;
 	}
