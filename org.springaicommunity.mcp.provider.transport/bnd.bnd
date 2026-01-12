@@ -1,0 +1,5 @@
+-buildpath: \
+	org.osgi.annotation.bundle,\
+	org.osgi.annotation.versioning,\
+	io.modelcontextprotocol.sdk.mcp-core,\
+	io.modelcontextprotocol.mcptools.json

@@ -1,5 +1,7 @@
 package io.modelcontextprotocol.mcptools.transport.server;
 
-public interface McpServerSessionFactory<AsyncVoidType, ServerSessionType> {
-	ServerSessionType create(McpServerTransport<AsyncVoidType> sessionTransport);
+public interface McpServerSessionFactory<S, T> {
+
+	S create(T sessionTransport);
+
 }

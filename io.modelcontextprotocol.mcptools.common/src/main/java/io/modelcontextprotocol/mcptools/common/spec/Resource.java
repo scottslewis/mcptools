@@ -7,91 +7,91 @@ import java.util.Map;
  * Resource definition
  */
 public class Resource implements BaseMetadata, Icons {
-    private String name;
-    private String title;
-    private String uri;
-    private String description;
-    private String mimeType;
-    private Annotations annotations;
-    private Integer size;
-    private Map<String, Object> _meta;
-    private List<Icon> icons;
+	private String name;
+	private String title;
+	private String uri;
+	private String description;
+	private String mimeType;
+	private Annotations annotations;
+	private Integer size;
+	private Map<String, Object> _meta;
+	private List<Icon> icons;
 
-    @Override
-    public String getName() {
-        return name;
-    }
+	@Override
+	public String getName() {
+		return name;
+	}
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+	@Override
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public String getTitle() {
-        return title;
-    }
+	@Override
+	public String getTitle() {
+		return title;
+	}
 
-    @Override
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	@Override
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-    public String getUri() {
-        return uri;
-    }
+	public String getUri() {
+		return uri;
+	}
 
-    public void setUri(String uri) {
-        this.uri = uri;
-    }
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public String getMimeType() {
-        return mimeType;
-    }
+	public String getMimeType() {
+		return mimeType;
+	}
 
-    public void setMimeType(String mimeType) {
-        this.mimeType = mimeType;
-    }
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
 
-    public Annotations getAnnotations() {
-        return annotations;
-    }
+	public Annotations getAnnotations() {
+		return annotations;
+	}
 
-    public void setAnnotations(Annotations annotations) {
-        this.annotations = annotations;
-    }
+	public void setAnnotations(Annotations annotations) {
+		this.annotations = annotations;
+	}
 
-    public Integer getSize() {
-        return size;
-    }
+	public Integer getSize() {
+		return size;
+	}
 
-    public void setSize(Integer size) {
-        this.size = size;
-    }
+	public void setSize(Integer size) {
+		this.size = size;
+	}
 
-    public Map<String, Object> get_meta() {
-        return _meta;
-    }
+	public Map<String, Object> get_meta() {
+		return _meta;
+	}
 
-    public void set_meta(Map<String, Object> _meta) {
-        this._meta = _meta;
-    }
+	public void set_meta(Map<String, Object> _meta) {
+		this._meta = _meta;
+	}
 
-    @Override
-    public List<Icon> getIcons() {
-        return icons;
-    }
+	@Override
+	public List<Icon> getIcons() {
+		return icons;
+	}
 
-    @Override
-    public void setIcons(List<Icon> icons) {
-        this.icons = icons;
-    }
+	@Override
+	public void setIcons(List<Icon> icons) {
+		this.icons = icons;
+	}
 }

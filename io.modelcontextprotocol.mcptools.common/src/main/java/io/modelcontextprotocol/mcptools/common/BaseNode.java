@@ -6,9 +6,9 @@ import java.util.Objects;
 public abstract class BaseNode {
 
 	public static final String DEFAULT_SEPARATOR = ".";
-	
+
 	protected final String nameSeparator;
-	
+
 	protected final String name;
 
 	protected String title;

@@ -5,10 +5,11 @@ import java.util.function.Function;
 
 import io.modelcontextprotocol.mcptools.transport.McpTransport;
 
-public interface McpClientTransport<AsyncVoidType, AsyncRPCMessageType> extends McpTransport<AsyncVoidType> {
+public interface McpClientTransport<A, M, T, R> extends McpTransport<A, M> {
 
-	AsyncVoidType connect(Function<AsyncRPCMessageType, AsyncRPCMessageType> handler);
+	A connect(Function<T, R> handler);
 
 	default void setExceptionHandler(Consumer<Throwable> handler) {
 	}
+
 }

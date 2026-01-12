@@ -1,1 +1,5 @@
--buildpath: io.modelcontextprotocol.mcptools.json
+-buildpath: \
+	io.modelcontextprotocol.mcptools.json,\
+	org.osgi.annotation.bundle,\
+	org.osgi.annotation.versioning,\
+	io.modelcontextprotocol.mcptools.common

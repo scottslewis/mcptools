@@ -48,9 +48,9 @@ public class ResourceNode extends BaseLeafNode {
 
 	@Override
 	public String toString() {
-		return "ResourceNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", title=" + title + ", description=" + description + ", meta=" + meta
-				+ ", uri=" + uri + ", size=" + size + ", mimeType=" + mimeType + ", annotations=" + annotations
-				+ "]";
+		return "ResourceNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", title=" + title
+				+ ", description=" + description + ", meta=" + meta + ", uri=" + uri + ", size=" + size + ", mimeType="
+				+ mimeType + ", annotations=" + annotations + "]";
 	}
 
 }

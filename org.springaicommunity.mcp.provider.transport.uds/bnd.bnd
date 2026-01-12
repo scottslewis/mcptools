@@ -1,0 +1,15 @@
+-buildpath: \
+	org.eclipse.ecf.ai.mcp.transports,\
+	io.projectreactor.reactor-core,\
+	slf4j.api,\
+	io.modelcontextprotocol.mcptools.json,\
+	org.osgi.annotation.bundle,\
+	org.osgi.annotation.versioning,\
+	org.osgi.framework,\
+	org.osgi.service.component,\
+	org.springaicommunity.mcp.provider.transport,\
+	reactive-streams,\
+	org.osgi.service.component.annotations,\
+	io.modelcontextprotocol.mcptools.transport;version=snapshot,\
+	io.modelcontextprotocol.mcptools.common,\
+	io.modelcontextprotocol.sdk.mcp-core

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface ToolNodeConverter<ToolType> {
-	
+
 	default List<ToolType> convertFromToolNodes(List<ToolNode> toolNodes) {
 		return toolNodes.stream().map(tn -> {
 			return convertFromToolNode(tn);
@@ -12,7 +12,7 @@ public interface ToolNodeConverter<ToolType> {
 	}
 
 	ToolType convertFromToolNode(ToolNode toolNode);
-	
+
 	default List<ToolNode> convertToToolNodes(List<ToolType> tools) {
 		return tools.stream().map(t -> {
 			return convertToToolNode(t);

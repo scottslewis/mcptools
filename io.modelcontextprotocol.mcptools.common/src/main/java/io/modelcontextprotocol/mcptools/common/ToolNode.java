@@ -38,9 +38,9 @@ public class ToolNode extends BaseLeafNode {
 
 	@Override
 	public String toString() {
-		return "ToolNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", title=" + title + ", description=" + description + ", meta=" + meta
-				+ ", inputSchema=" + inputSchema + ", outputSchema=" + outputSchema + ", toolAnnotation="
-				+ toolAnnotations + "]";
+		return "ToolNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", title=" + title + ", description="
+				+ description + ", meta=" + meta + ", inputSchema=" + inputSchema + ", outputSchema=" + outputSchema
+				+ ", toolAnnotation=" + toolAnnotations + "]";
 	}
 
 }

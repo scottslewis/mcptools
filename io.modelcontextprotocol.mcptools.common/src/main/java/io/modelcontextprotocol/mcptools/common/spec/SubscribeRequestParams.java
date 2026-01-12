@@ -5,4 +5,3 @@ package io.modelcontextprotocol.mcptools.common.spec;
  */
 public class SubscribeRequestParams extends ResourceRequestParams {
 }
-

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public interface GroupNodeConverter<GroupType> {
-	
+
 	default List<GroupType> convertFromGroupNodes(List<GroupNode> groupNodes) {
 		return groupNodes.stream().map(gn -> {
 			return convertFromGroupNode(gn);
@@ -12,7 +12,7 @@ public interface GroupNodeConverter<GroupType> {
 	}
 
 	GroupType convertFromGroupNode(GroupNode groupNode);
-	
+
 	default List<GroupNode> convertToGroupNodes(List<GroupType> groups) {
 		return groups.stream().map(g -> {
 			return convertToGroupNode(g);
@@ -20,5 +20,5 @@ public interface GroupNodeConverter<GroupType> {
 	}
 
 	GroupNode convertToGroupNode(GroupType group);
-	
+
 }

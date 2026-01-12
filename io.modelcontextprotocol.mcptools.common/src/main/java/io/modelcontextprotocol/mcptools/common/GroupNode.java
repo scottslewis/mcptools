@@ -33,7 +33,7 @@ public class GroupNode extends BaseNode {
 	public GroupNode getParent() {
 		return this.parent;
 	}
-	
+
 	public GroupNode getRoot() {
 		GroupNode parent = this.parent;
 		if (parent == null) {
@@ -166,9 +166,9 @@ public class GroupNode extends BaseNode {
 
 	@Override
 	public String toString() {
-		return "GroupNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", isRoot=" + isRoot() + ", title=" + title + ", description="
-				+ description + ", meta=" + meta + ", childGroups=" + childGroups + ", childTools=" + childTools
-				+ ", childPrompts=" + childPrompts + "]";
+		return "GroupNode [name=" + name + ", fqName=" + getFullyQualifiedName() + ", isRoot=" + isRoot() + ", title="
+				+ title + ", description=" + description + ", meta=" + meta + ", childGroups=" + childGroups
+				+ ", childTools=" + childTools + ", childPrompts=" + childPrompts + "]";
 	}
 
 }
